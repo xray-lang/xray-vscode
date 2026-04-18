@@ -1,0 +1,377 @@
+{
+  "Anonymous Function": {
+    "prefix": ["fn", "func", "function"],
+    "body": ["fn(${1:params}) {", "\t$0", "}"],
+    "description": "Anonymous function"
+  },
+  "Named Function": {
+    "prefix": ["fnn", "function"],
+    "body": ["fn ${1:name}(${2:params}) {", "\t$0", "}"],
+    "description": "Named function"
+  },
+  "Arrow Function": {
+    "prefix": ["arrow", "=>"],
+    "body": ["(${1:params}) => ${0:expr}"],
+    "description": "Arrow function"
+  },
+  "Arrow Function Block": {
+    "prefix": ["arrowb"],
+    "body": ["(${1:params}) => {", "\t$0", "}"],
+    "description": "Arrow function with block"
+  },
+  "Export Function": {
+    "prefix": ["export fn", "exportfn", "efn"],
+    "body": ["export fn ${1:name}(${2:params}) {", "\t$0", "}"],
+    "description": "Export function"
+  },
+  "HTTP Route": {
+    "prefix": ["route", "http.route"],
+    "body": ["http.route(\"${1:GET}\", \"${2:/}\", fn(req) {", "\t$0", "\treturn \"OK\"", "})"],
+    "description": "HTTP route handler"
+  },
+  "HTTP Server": {
+    "prefix": ["httpserver", "http.listen"],
+    "body": ["import http", "", "http.route(\"GET\", \"/\", fn(req) {", "\treturn \"Hello, World!\"", "})", "", "print(\"Server running on http://localhost:${1:8080}\")", "http.listen(${1:8080})"],
+    "description": "HTTP server template"
+  },
+  "Go Coroutine": {
+    "prefix": ["go"],
+    "body": ["go fn() {", "\t$0", "}()"],
+    "description": "Go coroutine"
+  },
+  "Go Named Coroutine": {
+    "prefix": ["gon", "gonamed"],
+    "body": ["let ${1:task} = go fn() {", "\t$0", "}()"],
+    "description": "Go coroutine with variable"
+  },
+  "Channel": {
+    "prefix": ["chan", "channel"],
+    "body": ["const ${1:ch} = Channel(${2:10})"],
+    "description": "Create a channel"
+  },
+  "Channel Send/Recv": {
+    "prefix": ["chansend", "chanrecv"],
+    "body": ["${1:ch}.send(${2:value})", "${1:ch}.recv()"],
+    "description": "Channel send and receive"
+  },
+  "Select": {
+    "prefix": ["select"],
+    "body": ["select {", "\t${1:msg} from ${2:ch} => {", "\t\t$0", "\t}", "\tafter ${3:1000} => {", "\t\tprint(\"timeout\")", "\t}", "}"],
+    "description": "Select statement"
+  },
+  "Shared Const": {
+    "prefix": ["shared", "sharedconst"],
+    "body": ["shared const ${1:name} = ${0:value}"],
+    "description": "Shared constant"
+  },
+  "For Loop": {
+    "prefix": ["for", "forin"],
+    "body": ["for (${1:item} in ${2:items}) {", "\t$0", "}"],
+    "description": "For-in loop"
+  },
+  "For C-style": {
+    "prefix": ["forc", "fori"],
+    "body": ["for (let ${1:i} = 0; ${1:i} < ${2:n}; ${1:i}++) {", "\t$0", "}"],
+    "description": "C-style for loop"
+  },
+  "While Loop": {
+    "prefix": ["while"],
+    "body": ["while (${1:condition}) {", "\t$0", "}"],
+    "description": "While loop"
+  },
+  "If Statement": {
+    "prefix": ["if"],
+    "body": ["if (${1:condition}) {", "\t$0", "}"],
+    "description": "If statement"
+  },
+  "If-Else Statement": {
+    "prefix": ["ife", "ifelse"],
+    "body": ["if (${1:condition}) {", "\t$0", "} else {", "\t", "}"],
+    "description": "If-else statement"
+  },
+  "Match Expression": {
+    "prefix": ["match"],
+    "body": ["match ${1:value} {", "\t${2:pattern} => ${3:result},", "\t_ => ${0:default}", "}"],
+    "description": "Match expression"
+  },
+  "Try-Catch": {
+    "prefix": ["try", "trycatch"],
+    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "}"],
+    "description": "Try-catch block"
+  },
+  "Try-Catch-Finally": {
+    "prefix": ["tryf", "trycatchfinally"],
+    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "} finally {", "\t", "}"],
+    "description": "Try-catch-finally block"
+  },
+  "Class": {
+    "prefix": ["class"],
+    "body": ["class ${1:Name} {", "\t${2:field}: ${3:type}", "\t", "\tconstructor(${4:params}) {", "\t\tthis.${2:field} = ${4:params}", "\t}", "\t", "\t${5:method}() {", "\t\t$0", "\t}", "}"],
+    "description": "Class definition"
+  },
+  "Class Extends": {
+    "prefix": ["classex", "classextends"],
+    "body": ["class ${1:Name} extends ${2:Base} {", "\tconstructor(${3:params}) {", "\t\tbase(${4:args})", "\t\t$0", "\t}", "}"],
+    "description": "Class with inheritance"
+  },
+  "Import": {
+    "prefix": ["import", "imp"],
+    "body": ["import ${1:module}"],
+    "description": "Import statement"
+  },
+  "Export Const": {
+    "prefix": ["exportconst", "econst"],
+    "body": ["export const ${1:NAME} = ${0:value}"],
+    "description": "Export constant"
+  },
+  "Let Variable": {
+    "prefix": ["let"],
+    "body": ["let ${1:name} = ${0:value}"],
+    "description": "Let variable"
+  },
+  "Const Variable": {
+    "prefix": ["const"],
+    "body": ["const ${1:name} = ${0:value}"],
+    "description": "Const variable"
+  },
+  "Array": {
+    "prefix": ["arr", "array"],
+    "body": ["let ${1:arr} = [${0}]"],
+    "description": "Array declaration"
+  },
+  "Map": {
+    "prefix": ["map"],
+    "body": ["let ${1:map} = {\"${2:key}\" => ${0:value}}"],
+    "description": "Map declaration"
+  },
+  "Set": {
+    "prefix": ["set"],
+    "body": ["let ${1:set} = #[${0}]"],
+    "description": "Set declaration"
+  },
+  "Json Object": {
+    "prefix": ["json", "obj"],
+    "body": ["let ${1:obj} = {", "\t${2:key}: ${0:value}", "}"],
+    "description": "Json object"
+  },
+  "Print": {
+    "prefix": ["print", "pr"],
+    "body": ["print(${0})"],
+    "description": "Print statement"
+  },
+  "Print String": {
+    "prefix": ["prints", "prs"],
+    "body": ["print(\"${0}\")"],
+    "description": "Print string"
+  },
+  "Assert": {
+    "prefix": ["assert"],
+    "body": ["assert(${0:condition})"],
+    "description": "Assert statement"
+  },
+  "Assert Equal": {
+    "prefix": ["asserteq", "aeq"],
+    "body": ["assert_eq(${1:actual}, ${0:expected})"],
+    "description": "Assert equal"
+  },
+  "Defer": {
+    "prefix": ["defer"],
+    "body": ["defer ${0:cleanup()}"],
+    "description": "Defer statement"
+  },
+  "Main Template": {
+    "prefix": ["main", "xrmain"],
+    "body": ["// ${1:Description}", "", "fn main() {", "\t$0", "}", "", "main()"],
+    "description": "Main function template"
+  },
+  "Time Sleep": {
+    "prefix": ["sleep", "time.sleep"],
+    "body": ["time.sleep(${0:1000})"],
+    "description": "Sleep for milliseconds"
+  },
+  "JSON Parse": {
+    "prefix": ["jsonparse"],
+    "body": ["let ${1:data} = json.parse(${0:str})"],
+    "description": "Parse JSON string"
+  },
+  "JSON Stringify": {
+    "prefix": ["jsonstr", "stringify"],
+    "body": ["json.stringify(${0:obj})"],
+    "description": "Convert to JSON string"
+  },
+  "Await All": {
+    "prefix": ["awaitall"],
+    "body": ["await.all([${0:tasks}])"],
+    "description": "Await all tasks"
+  },
+  "Await Any": {
+    "prefix": ["awaitany"],
+    "body": ["await.any([${0:tasks}])"],
+    "description": "Await any task"
+  },
+  "Type Alias": {
+    "prefix": ["type", "typealias"],
+    "body": ["type ${1:Name} = ${0:type}"],
+    "description": "Type alias declaration"
+  },
+  "Export Type Alias": {
+    "prefix": ["exporttype", "etype"],
+    "body": ["export type ${1:Name} = ${0:type}"],
+    "description": "Export type alias"
+  },
+  "Enum": {
+    "prefix": ["enum"],
+    "body": ["enum ${1:Name} {", "\t${2:VALUE1},", "\t${3:VALUE2},", "\t$0", "}"],
+    "description": "Enum declaration"
+  },
+  "Interface": {
+    "prefix": ["interface", "iface"],
+    "body": ["interface ${1:Name} {", "\t${2:method}(${3:params}): ${0:type}", "}"],
+    "description": "Interface declaration"
+  },
+  "Test Function": {
+    "prefix": ["test", "@test"],
+    "body": ["@test", "fn ${1:test_name}() {", "\t$0", "}"],
+    "description": "Test function with @test annotation"
+  },
+  "Scope Block": {
+    "prefix": ["scope"],
+    "body": ["scope {", "\tgo ${1:task1}()", "\tgo ${2:task2}()", "\t$0", "}"],
+    "description": "Structured concurrency scope block"
+  },
+  "Coro Monitor": {
+    "prefix": ["coromonitor", "Coro.monitor"],
+    "body": ["let ${1:ch} = Coro.monitor(\"${2:name}\")", "let ${3:reason} = ${1:ch}.recv()", "print(\"exited: \" + ${3:reason})"],
+    "description": "Monitor a named coroutine via Coro global object"
+  },
+  "StringBuilder": {
+    "prefix": ["sb", "stringbuilder"],
+    "body": ["let ${1:sb} = StringBuilder()", "${1:sb}.append(${2:\"hello\"}).append(${3:\" world\"})", "let ${4:result} = ${1:sb}.toString()"],
+    "description": "StringBuilder usage"
+  },
+  "Bytes": {
+    "prefix": ["bytes"],
+    "body": ["let ${1:buf} = Bytes(${2:1024})"],
+    "description": "Create byte buffer"
+  },
+  "Await Timeout": {
+    "prefix": ["awaittimeout"],
+    "body": ["await.timeout(${1:task}, ${0:5000})"],
+    "description": "Await with timeout (ms)"
+  },
+  "Cluster Start": {
+    "prefix": ["clusterstart", "cluster.start"],
+    "body": ["import cluster", "", "cluster.start({", "\tname: \"${1:node1}\",", "\tport: ${2:9000}", "})", "$0"],
+    "description": "Start a cluster node"
+  },
+  "Go Named Task": {
+    "prefix": ["gotask", "goname"],
+    "body": ["let ${1:task} = go(name: \"${2:worker}\") ${3:process}(${4:data})"],
+    "description": "Launch named coroutine"
+  },
+  "Regex Pattern": {
+    "prefix": ["regex", "re"],
+    "body": ["let ${1:re} = /${2:pattern}/", "if (${1:re}.test(${3:text})) {", "\t$0", "}"],
+    "description": "Regex pattern matching"
+  },
+  "Template String": {
+    "prefix": ["tpl", "template"],
+    "body": ["`${1:Hello, }${${2:name}}${3:!}`"],
+    "description": "Template string with interpolation"
+  },
+  "Format Log": {
+    "prefix": ["log", "logf"],
+    "body": ["log.info(`${1:message} ${${2:value}}`)"],
+    "description": "Log info with template string"
+  },
+  "Go With Return Channel": {
+    "prefix": ["gochan"],
+    "body": [
+      "const ${1:done} = Channel<${2:int}>()",
+      "go fn() {",
+      "\t$0",
+      "\t${1:done}.send(${3:0})",
+      "}()",
+      "let ${4:result} = ${1:done}.recv()"
+    ],
+    "description": "Coroutine with channel-based completion signal"
+  },
+  "Scope Concurrency": {
+    "prefix": ["scopeall"],
+    "body": [
+      "scope {",
+      "\tgo fn() { $1 }()",
+      "\tgo fn() { $2 }()",
+      "\t$0",
+      "} // all goroutines joined here",
+      ""
+    ],
+    "description": "Structured concurrency scope that waits for all children"
+  },
+  "Await Timeout Guarded": {
+    "prefix": ["awaitt"],
+    "body": [
+      "try {",
+      "\tlet ${1:result} = await.timeout(${2:task}, ${3:5000})",
+      "\t$0",
+      "} catch (e) {",
+      "\tprint(\"timeout: \" + e)",
+      "}"
+    ],
+    "description": "await.timeout with error handling"
+  },
+  "Result Match": {
+    "prefix": ["resultmatch"],
+    "body": [
+      "match ${1:result} {",
+      "\tOk(${2:value}) => ${3:handle_ok},",
+      "\tErr(${4:e}) => ${0:handle_err}",
+      "}"
+    ],
+    "description": "Match on Result<T, E>"
+  },
+  "Option Match": {
+    "prefix": ["optionmatch"],
+    "body": [
+      "match ${1:opt} {",
+      "\tSome(${2:value}) => ${3:handle_some},",
+      "\tNone => ${0:handle_none}",
+      "}"
+    ],
+    "description": "Match on Option<T>"
+  },
+  "Exception Class": {
+    "prefix": ["exception"],
+    "body": [
+      "class ${1:MyError} extends Exception {",
+      "\tconstructor(${2:message}: string) {",
+      "\t\tbase(${2:message})",
+      "\t}",
+      "}"
+    ],
+    "description": "Custom exception class"
+  },
+  "Benchmark": {
+    "prefix": ["bench"],
+    "body": [
+      "fn ${1:bench_name}() {",
+      "\tlet start = time.monotonic()",
+      "\tfor (let i = 0; i < ${2:1000000}; i++) {",
+      "\t\t$0",
+      "\t}",
+      "\tprint(\"${1:bench_name}: \" + (time.monotonic() - start) + \"ms\")",
+      "}"
+    ],
+    "description": "Simple microbenchmark loop"
+  },
+  "FS Read Text": {
+    "prefix": ["fsread"],
+    "body": ["let ${1:text} = fs.read_to_string(${0:\"path\"})"],
+    "description": "Read entire file as string"
+  },
+  "FS Write Text": {
+    "prefix": ["fswrite"],
+    "body": ["fs.write(${1:\"path\"}, ${0:text})"],
+    "description": "Write string to file"
+  }
+}

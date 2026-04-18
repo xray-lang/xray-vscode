@@ -1,0 +1,441 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Xray",
+  "scopeName": "source.xray",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#decorators" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#declarations" },
+    { "include": "#generic-types" },
+    { "include": "#stdlib-module" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#operators" },
+    { "include": "#functions" },
+    { "include": "#variables" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.xray",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.xray",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "decorators": {
+      "patterns": [
+        {
+          "name": "meta.decorator.xray",
+          "match": "@([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "0": { "name": "entity.name.decorator.xray" }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.xray",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.xray",
+              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
+            },
+            {
+              "name": "invalid.illegal.escape.xray",
+              "match": "\\\\."
+            },
+            {
+              "name": "meta.embedded.expression.xray",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
+              },
+              "endCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.end.xray" }
+              },
+              "patterns": [
+                { "include": "$self" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.xray",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.xray",
+              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
+            },
+            {
+              "name": "invalid.illegal.escape.xray",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.template.xray",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "name": "constant.character.escape.xray",
+              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
+            },
+            {
+              "name": "invalid.illegal.escape.xray",
+              "match": "\\\\."
+            },
+            {
+              "name": "meta.embedded.expression.xray",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
+              },
+              "endCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.end.xray" }
+              },
+              "patterns": [
+                { "include": "$self" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "string.regexp.xray",
+          "begin": "(?<=[=(,:\\[!&|?])\\s*/(?![/*\\s])",
+          "end": "/[gimsuy]*",
+          "patterns": [
+            {
+              "name": "constant.character.escape.xray",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.xray",
+          "match": "\\b0[xX][0-9a-fA-F_]+\\b"
+        },
+        {
+          "name": "constant.numeric.binary.xray",
+          "match": "\\b0[bB][01_]+\\b"
+        },
+        {
+          "name": "constant.numeric.octal.xray",
+          "match": "\\b0[oO][0-7_]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.xray",
+          "match": "\\b[0-9][0-9_]*\\.[0-9][0-9_]*([eE][+-]?[0-9_]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.xray",
+          "match": "\\b[0-9][0-9_]*\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "comment": "shared const declaration: shared const NAME = ... (highlight modifier + declarator together)",
+          "match": "\\b(shared)\\s+(const)\\b",
+          "captures": {
+            "1": { "name": "storage.modifier.shared.xray" },
+            "2": { "name": "keyword.declaration.const.xray" }
+          }
+        },
+        {
+          "name": "keyword.control.xray",
+          "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|case|default|yield|after)\\b"
+        },
+        {
+          "name": "keyword.declaration.let.xray",
+          "match": "\\blet\\b"
+        },
+        {
+          "name": "keyword.declaration.const.xray",
+          "match": "\\bconst\\b"
+        },
+        {
+          "name": "keyword.declaration.function.xray",
+          "match": "\\bfn\\b"
+        },
+        {
+          "name": "keyword.declaration.type.xray",
+          "match": "\\b(class|interface|enum|type)\\b"
+        },
+        {
+          "name": "storage.modifier.xray",
+          "match": "\\b(static|private|public|abstract|override|shared)\\b"
+        },
+        {
+          "name": "keyword.operator.overload.xray",
+          "match": "\\boperator\\b"
+        },
+        {
+          "name": "keyword.class.xray",
+          "match": "\\b(extends|implements|constructor|this|super|new)\\b"
+        },
+        {
+          "name": "keyword.exception.xray",
+          "match": "\\b(try|catch|finally|throw)\\b"
+        },
+        {
+          "name": "keyword.module.xray",
+          "match": "\\b(import|export|from|as)\\b"
+        },
+        {
+          "name": "keyword.concurrency.xray",
+          "match": "\\b(go|await|select|defer|scope|cancel|cancelled|after)\\b"
+        },
+        {
+          "name": "keyword.other.xray",
+          "match": "\\b(base)\\b"
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "comment": "Class declaration: class Point { ... }",
+          "match": "\\b(class)\\s+([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.type.class.xray" }
+          }
+        },
+        {
+          "comment": "Enum declaration: enum Color { ... }",
+          "match": "\\b(enum)\\s+([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.type.enum.xray" }
+          }
+        },
+        {
+          "comment": "Interface declaration: interface Iterable { ... }",
+          "match": "\\b(interface)\\s+([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.type.interface.xray" }
+          }
+        },
+        {
+          "comment": "Type alias declaration: type Point = { ... }",
+          "match": "\\b(type)\\s+([A-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.type.alias.xray" }
+          }
+        }
+      ]
+    },
+    "generic-types": {
+      "patterns": [
+        {
+          "comment": "Generic class definition: class Box<T>",
+          "match": "\\b(class)\\s+([A-Z][a-zA-Z0-9_]*)\\s*(<)([A-Z][a-zA-Z0-9_]*(?:\\s*,\\s*[A-Z][a-zA-Z0-9_]*)*)(>)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.type.class.xray" },
+            "3": { "name": "punctuation.definition.typeparameters.begin.xray" },
+            "4": { "name": "entity.name.type.parameter.xray" },
+            "5": { "name": "punctuation.definition.typeparameters.end.xray" }
+          }
+        },
+        {
+          "comment": "Generic function definition: fn foo<T>(x: T)",
+          "match": "\\b(fn)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(<)([A-Z][a-zA-Z0-9_]*(?:\\s*,\\s*[A-Z][a-zA-Z0-9_]*)*)(>)",
+          "captures": {
+            "1": { "name": "keyword.declaration.xray" },
+            "2": { "name": "entity.name.function.xray" },
+            "3": { "name": "punctuation.definition.typeparameters.begin.xray" },
+            "4": { "name": "entity.name.type.parameter.xray" },
+            "5": { "name": "punctuation.definition.typeparameters.end.xray" }
+          }
+        },
+        {
+          "comment": "Generic static method: static identity<T>(x: T)",
+          "match": "\\b(static)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(<)([A-Z][a-zA-Z0-9_]*(?:\\s*,\\s*[A-Z][a-zA-Z0-9_]*)*)(>)",
+          "captures": {
+            "1": { "name": "keyword.class.xray" },
+            "2": { "name": "entity.name.function.xray" },
+            "3": { "name": "punctuation.definition.typeparameters.begin.xray" },
+            "4": { "name": "entity.name.type.parameter.xray" },
+            "5": { "name": "punctuation.definition.typeparameters.end.xray" }
+          }
+        },
+        {
+          "comment": "Generic method definition: add<T>(item: T)",
+          "match": "^\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*(<)([A-Z][a-zA-Z0-9_]*(?:\\s*,\\s*[A-Z][a-zA-Z0-9_]*)*)(>)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.xray" },
+            "2": { "name": "punctuation.definition.typeparameters.begin.xray" },
+            "3": { "name": "entity.name.type.parameter.xray" },
+            "4": { "name": "punctuation.definition.typeparameters.end.xray" }
+          }
+        },
+        {
+          "comment": "Generic type annotation: Box<int>, Channel<string>, Array<T>",
+          "match": "\\b([A-Z][a-zA-Z0-9_]*)(<)([^<>]+(?:<[^<>]+>)?)(>)",
+          "captures": {
+            "1": { "name": "support.type.builtin.xray" },
+            "2": { "name": "punctuation.definition.typeparameters.begin.xray" },
+            "3": { "name": "support.type.xray" },
+            "4": { "name": "punctuation.definition.typeparameters.end.xray" }
+          }
+        },
+        {
+          "comment": "Nullable type: int?, string?",
+          "match": "\\b(int|float|string|bool|void|any|[A-Z][a-zA-Z0-9_]*)(\\?)",
+          "captures": {
+            "1": { "name": "support.type.xray" },
+            "2": { "name": "keyword.operator.nullable.xray" }
+          }
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "comment": "Type cast functions: int(), float(), string(), bool()",
+          "name": "support.function.builtin.xray",
+          "match": "\\b(int|float|string|bool)\\s*(?=\\()"
+        },
+        {
+          "name": "support.type.primitive.xray",
+          "match": "\\b(int|float|string|bool|void|any|unknown|never)\\b"
+        },
+        {
+          "name": "support.type.builtin.xray",
+          "match": "\\b(Array|Map|Set|Json|Bytes|Slice|Channel|BigInt|StringBuilder|Exception|Error|Regex|DateTime|CoroPool|Coro|Task|Result|Option)\\b"
+        }
+      ]
+    },
+    "stdlib-module": {
+      "patterns": [
+        {
+          "comment": "Standard library module prefix, e.g. fs.read / json.parse / http.listen",
+          "match": "\\b(time|json|http|regex|log|math|os|fs|crypto|base64|datetime|path|string|io|csv|compress|encoding|gc|toml|url|xml|yaml|net|ws|cluster|hex|process|sync|coro|test)\\s*(?=\\.)",
+          "name": "support.module.xray"
+        },
+        {
+          "comment": "Global Coro object (xray coroutine inspection API)",
+          "match": "\\b(Coro)\\s*(?=\\.)",
+          "name": "support.class.xray"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.xray",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.xray",
+          "match": "\\bnull\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.nullish.xray",
+          "match": "\\?\\?"
+        },
+        {
+          "name": "keyword.operator.optional-chaining.xray",
+          "match": "\\?\\."
+        },
+        {
+          "name": "keyword.operator.comparison.xray",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.logical.xray",
+          "match": "(&&|\\|\\||!)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.xray",
+          "match": "(\\+|-|\\*|/|%|\\*\\*)"
+        },
+        {
+          "name": "keyword.operator.bitwise.xray",
+          "match": "(<<|>>|>>>|&|\\||\\^|~)"
+        },
+        {
+          "name": "keyword.operator.assignment.xray",
+          "match": "(=|\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=|<<=|>>=)"
+        },
+        {
+          "name": "keyword.operator.arrow.xray",
+          "match": "(=>|->)"
+        },
+        {
+          "name": "keyword.operator.spread.xray",
+          "match": "\\.\\.\\.?"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "comment": "Built-in global functions",
+          "name": "support.function.builtin.xray",
+          "match": "\\b(print|println|printf|sprintf|dump|typeof|typename|nameof|assert|assert_eq|assert_ne|assert_true|assert_false|panic|copy|chr|ord|len|range|min|max|abs|hash)\\s*(?=\\()"
+        },
+        {
+          "comment": "Coroutine / concurrency intrinsics used as call sites",
+          "name": "support.function.concurrency.xray",
+          "match": "\\b(go|await|defer)\\s*(?=\\()"
+        },
+        {
+          "comment": "Module path after import / from (e.g. import http.server)",
+          "match": "\\b(import|from)\\s+([a-zA-Z_][a-zA-Z0-9_\\.]*)",
+          "captures": {
+            "1": { "name": "keyword.module.xray" },
+            "2": { "name": "entity.name.module.xray" }
+          }
+        },
+        {
+          "name": "entity.name.function.xray",
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "comment": "Wildcard pattern in match expressions",
+          "name": "variable.language.wildcard.xray",
+          "match": "\\b_\\b"
+        },
+        {
+          "name": "variable.other.xray",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}

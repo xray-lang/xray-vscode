@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Xray App Icon -->
+  <defs>
+    <linearGradient id="appBgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+    
+    <filter id="innerGlow">
+       <feGaussianBlur stdDeviation="10" result="blur"/>
+       <feComposite in="SourceGraphic" in2="blur" operator="arithmetic" k2="1" k3="1"/>
+    </filter>
+  </defs>
+
+  <!-- Container (Squircle-ish) -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#appBgGrad)" />
+  
+  <!-- Subtle Grid Background -->
+  <path d="M64,512 L960,512 M512,64 L512,960" stroke="#334155" stroke-width="2" opacity="0.2" />
+  <circle cx="512" cy="512" r="350" stroke="#334155" stroke-width="2" opacity="0.1" fill="none" />
+  
+  <!-- Logo -->
+  <g transform="translate(212, 212) scale(6)">
+    <!-- Shadow -->
+    <g transform="translate(0, 5)" opacity="0.3">
+        <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+        <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+
+    <!-- Left Blade -->
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    
+    <!-- Right Blade -->
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+  
+  <!-- Glossy Highlight (Top) -->
+  <path d="M200,64 Q512,150 824,64" stroke="white" stroke-width="2" opacity="0.2" fill="none" />
+  
+</svg>

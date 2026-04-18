@@ -1,0 +1,397 @@
+{
+  "name": "xray-lang",
+  "displayName": "Xray Language",
+  "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
+  "version": "0.5.2",
+  "publisher": "xray-lang",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xray-lang/xray"
+  },
+  "homepage": "https://www.xray-lang.org",
+  "bugs": {
+    "url": "https://github.com/xray-lang/xray/issues"
+  },
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "icon": "icons/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "Snippets",
+    "Formatters"
+  ],
+  "keywords": [
+    "xray",
+    "scripting",
+    "concurrency",
+    "coroutine",
+    "lsp",
+    "dap"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "xray",
+        "aliases": ["Xray", "xray"],
+        "extensions": [".xr"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/icon.png",
+          "dark": "./icons/icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "xray",
+        "scopeName": "source.xray",
+        "path": "./syntaxes/xray.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.xray.codeblock",
+        "path": "./syntaxes/xray-markdown.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": {
+          "meta.embedded.block.xray": "xray"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "xray",
+        "path": "./snippets/xray.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Xray",
+      "properties": {
+        "xray.lsp.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Path to the `xray` executable for the language server. If empty, uses the bundled binary, otherwise falls back to `xray` on `PATH`.",
+          "scope": "machine-overridable"
+        },
+        "xray.lsp.transport": {
+          "type": "string",
+          "enum": ["stdio", "tcp"],
+          "default": "stdio",
+          "description": "LSP transport. Use 'tcp' only for debugging the server itself."
+        },
+        "xray.lsp.tcp.port": {
+          "type": "number",
+          "default": 7711,
+          "description": "TCP port when xray.lsp.transport = 'tcp'. Must match the server --port option."
+        },
+        "xray.lsp.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the Xray language server."
+        },
+        "xray.lsp.args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Extra command-line arguments passed to `xray lsp`."
+        },
+        "xray.lsp.env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "default": {},
+          "description": "Extra environment variables for the language server process."
+        },
+        "xray.lsp.autoRestart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically restart the language server when it exits unexpectedly."
+        },
+        "xray.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Publish compiler diagnostics while editing."
+        },
+        "xray.diagnostics.debounceMs": {
+          "type": "number",
+          "default": 300,
+          "description": "Delay (ms) between the last edit and publishing diagnostics."
+        },
+        "xray.completion.autoImport": {
+          "type": "boolean",
+          "default": false,
+          "description": "Propose symbols from other files and auto-add imports."
+        },
+        "xray.completion.maxItems": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of completion items returned per request."
+        },
+        "xray.analysis.typeChecking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable full type-checking diagnostics."
+        },
+        "xray.format.tabSize": {
+          "type": "number",
+          "default": 4,
+          "description": "Indentation width used by the formatter."
+        },
+        "xray.format.insertSpaces": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use spaces (true) or tabs (false) for indentation."
+        },
+        "xray.inlayHints.typeAnnotations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inferred type annotations for variables without explicit type."
+        },
+        "xray.inlayHints.parameterNames": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show parameter name hints in function calls."
+        },
+        "xray.debug.path": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Path to the `xray` executable for the debug adapter. If empty, uses the bundled binary or `xray` from `PATH`.",
+          "scope": "machine-overridable"
+        },
+        "xray.debug.trace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug adapter trace logging."
+        },
+        "xray.debug.console": {
+          "type": "string",
+          "enum": ["internalConsole", "integratedTerminal", "externalTerminal"],
+          "default": "internalConsole",
+          "description": "Where the debugged program's stdout/stderr is displayed."
+        },
+        "xray.server.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show an Xray LSP status item in the status bar."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "xray.restartServer",
+        "title": "Xray: Restart Language Server",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.stopServer",
+        "title": "Xray: Stop Language Server",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.startServer",
+        "title": "Xray: Start Language Server",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.showServerLog",
+        "title": "Xray: Show Language Server Output",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.showDebugLog",
+        "title": "Xray: Show Debug Adapter Output",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.startDebugging",
+        "title": "Xray: Debug Current File",
+        "category": "Xray"
+      },
+      {
+        "command": "xray.collectDiagnostics",
+        "title": "Xray: Collect Diagnostic Info",
+        "category": "Xray"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "xray.startDebugging",
+          "when": "resourceLangId == xray",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "xray.startDebugging",
+          "when": "resourceLangId == xray"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "xray.startDebugging",
+        "key": "ctrl+f5",
+        "mac": "cmd+f5",
+        "when": "resourceLangId == xray"
+      },
+      {
+        "command": "xray.restartServer",
+        "key": "ctrl+shift+alt+r",
+        "mac": "cmd+shift+alt+r",
+        "when": "resourceLangId == xray"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "xray",
+        "label": "Xray Debug",
+        "languages": ["xray"],
+        "program": "./out/debugAdapter.js",
+        "runtime": "node",
+        "configurationAttributes": {
+          "launch": {
+            "required": ["program"],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Absolute path to the xray script to debug",
+                "default": "${file}"
+              },
+              "args": {
+                "type": "array",
+                "description": "Command line arguments passed to the script",
+                "items": { "type": "string" },
+                "default": []
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for the script",
+                "default": "${workspaceFolder}"
+              },
+              "env": {
+                "type": "object",
+                "description": "Environment variables passed to the script",
+                "additionalProperties": { "type": "string" },
+                "default": {}
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Stop immediately after launch",
+                "default": false
+              },
+              "console": {
+                "type": "string",
+                "enum": ["internalConsole", "integratedTerminal", "externalTerminal"],
+                "default": "internalConsole",
+                "description": "Where the debugged program's stdout/stderr is displayed"
+              },
+              "trace": {
+                "type": "boolean",
+                "default": false,
+                "description": "Enable DAP trace log for this session"
+              },
+              "xrayPath": {
+                "type": "string",
+                "description": "Override path to the xray executable",
+                "default": ""
+              }
+            }
+          },
+          "attach": {
+            "required": ["port"],
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "Host to connect to",
+                "default": "localhost"
+              },
+              "port": {
+                "type": "number",
+                "description": "Debug port to attach to",
+                "default": 4711
+              },
+              "trace": {
+                "type": "boolean",
+                "default": false,
+                "description": "Enable DAP trace log for this session"
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "xray",
+            "request": "launch",
+            "name": "Launch Xray Script",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Xray: Launch Script",
+            "description": "Launch and debug the current xray script",
+            "body": {
+              "type": "xray",
+              "request": "launch",
+              "name": "Launch ${1:script.xr}",
+              "program": "^\"\\${workspaceFolder}/${1:script.xr}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "args": [],
+              "stopOnEntry": false
+            }
+          },
+          {
+            "label": "Xray: Attach to Remote",
+            "description": "Attach to a running xray debug session",
+            "body": {
+              "type": "xray",
+              "request": "attach",
+              "name": "Attach to Xray",
+              "host": "localhost",
+              "port": 4711
+            }
+          }
+        ]
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "xray"
+      }
+    ],
+    "markdown.markdownItPlugins": true
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package-ext",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "bundle": "node esbuild.config.mjs",
+    "bundle-watch": "node esbuild.config.mjs --watch",
+    "package-ext": "npm run check-types && npm run bundle",
+    "check-types": "tsc -p ./ --noEmit",
+    "package": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies",
+    "clean": "rimraf out"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.92.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3"
+  }
+}
