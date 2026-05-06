@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 import * as net from 'net';
 import {
@@ -20,7 +21,12 @@ let client: LanguageClient | undefined;
 let outputChannel: vscode.OutputChannel | undefined;
 let traceChannel: vscode.OutputChannel | undefined;
 let statusItem: vscode.LanguageStatusItem | undefined;
+let debugOutputChannel: vscode.OutputChannel | undefined;
 let extensionContext: vscode.ExtensionContext | undefined;
+let intentionalStop = false;
+let autoRestartAttempts = 0;
+const MAX_AUTO_RESTART_ATTEMPTS = 5;
+const AUTO_RESTART_BASE_DELAY_MS = 1000;
 
 // ---------------------------------------------------------------------------
 // Activation
@@ -34,13 +40,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(outputChannel, traceChannel);
 
     createStatusItem(context);
-    registerDebugProviders(context);
+    debugOutputChannel = registerDebugProviders(context);
     registerCommands(context);
 
     // Restart LSP on relevant config changes.
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(async (e) => {
-            const relevant = [
+            // Settings that require a full LSP restart (binary / transport change).
+            const restartKeys = [
                 'xray.lsp.path',
                 'xray.lsp.transport',
                 'xray.lsp.tcp.port',
@@ -48,8 +55,29 @@ export async function activate(context: vscode.ExtensionContext) {
                 'xray.lsp.env',
                 'xray.lsp.trace.server'
             ];
-            if (relevant.some((k) => e.affectsConfiguration(k))) {
+            if (restartKeys.some((k) => e.affectsConfiguration(k))) {
+                // Full restart — the new server will pick up all latest settings.
                 await restartLsp();
+            } else {
+                // Settings that can be hot-reloaded via workspace/didChangeConfiguration.
+                const hotKeys = [
+                    'xray.diagnostics.enabled',
+                    'xray.diagnostics.debounceMs',
+                    'xray.completion.autoImport',
+                    'xray.completion.maxItems',
+                    'xray.analysis.typeChecking',
+                    'xray.format.tabSize',
+                    'xray.format.insertSpaces',
+                    'xray.inlayHints.typeAnnotations',
+                    'xray.inlayHints.parameterNames'
+                ];
+                if (client && hotKeys.some((k) => e.affectsConfiguration(k))) {
+                    void client.sendNotification('workspace/didChangeConfiguration', {
+                        settings: buildInitializationOptions(
+                            vscode.workspace.getConfiguration('xray')
+                        )
+                    });
+                }
             }
             if (e.affectsConfiguration('xray.server.showStatusBar')) {
                 toggleStatusItem();
@@ -145,7 +173,10 @@ async function startLsp(): Promise<void> {
     }
 
     const clientOptions: LanguageClientOptions = {
-        documentSelector: [{ scheme: 'file', language: 'xray' }],
+        documentSelector: [
+            { scheme: 'file', language: 'xray' },
+            { scheme: 'untitled', language: 'xray' }
+        ],
         synchronize: {
             fileEvents: vscode.workspace.createFileSystemWatcher('**/*.xr'),
             configurationSection: 'xray'
@@ -186,12 +217,12 @@ async function startLsp(): Promise<void> {
                 break;
             case State.Stopped:
                 setStatus('Stopped', '');
+                handleUnexpectedStop();
                 break;
         }
     });
 
-    extensionContext.subscriptions.push(client);
-
+    intentionalStop = false;
     setStatus('Starting', '');
     try {
         await client.start();
@@ -207,6 +238,7 @@ async function stopLsp(): Promise<void> {
     if (!client) {
         return;
     }
+    intentionalStop = true;
     try {
         await client.stop();
     } catch (err) {
@@ -218,11 +250,59 @@ async function stopLsp(): Promise<void> {
 
 async function restartLsp(): Promise<void> {
     await stopLsp();
+    intentionalStop = false;
+    autoRestartAttempts = 0;
     try {
         await startLsp();
     } catch (err) {
         handleStartupFailure(err);
     }
+}
+
+function handleUnexpectedStop(): void {
+    if (intentionalStop) {
+        return;
+    }
+    // Clear stale client reference so startLsp() can proceed.
+    client = undefined;
+
+    const autoRestart = vscode.workspace
+        .getConfiguration('xray')
+        .get<boolean>('lsp.autoRestart', true);
+    if (!autoRestart) {
+        outputChannel?.appendLine('[xray-lsp] server stopped; autoRestart is disabled');
+        return;
+    }
+    if (autoRestartAttempts >= MAX_AUTO_RESTART_ATTEMPTS) {
+        outputChannel?.appendLine(
+            `[xray-lsp] server stopped; giving up after ${autoRestartAttempts} restart attempts`
+        );
+        vscode.window
+            .showErrorMessage(
+                `Xray language server crashed ${autoRestartAttempts} times. Please check the log.`,
+                'Show Log'
+            )
+            .then((pick) => {
+                if (pick === 'Show Log') {
+                    outputChannel?.show(true);
+                }
+            });
+        return;
+    }
+
+    autoRestartAttempts++;
+    const delay = AUTO_RESTART_BASE_DELAY_MS * Math.pow(2, autoRestartAttempts - 1);
+    outputChannel?.appendLine(
+        `[xray-lsp] server stopped unexpectedly; restarting in ${delay}ms (attempt ${autoRestartAttempts}/${MAX_AUTO_RESTART_ATTEMPTS})`
+    );
+    setTimeout(async () => {
+        try {
+            await startLsp();
+            autoRestartAttempts = 0;
+        } catch (err) {
+            handleStartupFailure(err);
+        }
+    }, delay);
 }
 
 function handleStartupFailure(err: unknown): void {
@@ -341,8 +421,23 @@ function registerCommands(context: vscode.ExtensionContext): void {
             outputChannel?.show(true);
         }),
         vscode.commands.registerCommand('xray.showDebugLog', () => {
-            vscode.commands.executeCommand('workbench.action.output.toggleOutput');
-            outputChannel?.appendLine('Use the Output panel dropdown to switch to "Xray Debug".');
+            debugOutputChannel?.show(true);
+        }),
+        vscode.commands.registerCommand('xray.runFile', () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || (editor.document.languageId !== 'xray' && !editor.document.fileName.endsWith('.xr'))) {
+                vscode.window.showWarningMessage('Open a .xr file to run.');
+                return;
+            }
+            const filePath = editor.document.uri.fsPath;
+            const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? path.dirname(filePath);
+            const resolved = resolveXrayPath(extensionContext!, 'xray.lsp.path');
+            const terminal = vscode.window.createTerminal({
+                name: `Xray: ${path.basename(filePath)}`,
+                cwd
+            });
+            terminal.show();
+            terminal.sendText(`${resolved.path} run "${filePath}"`);
         }),
         vscode.commands.registerCommand('xray.collectDiagnostics', async () => {
             const doc = await buildDiagnosticDocument();

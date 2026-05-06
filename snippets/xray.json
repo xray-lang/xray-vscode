@@ -201,12 +201,12 @@
   },
   "Await All": {
     "prefix": ["awaitall"],
-    "body": ["await.all([${0:tasks}])"],
+    "body": ["await all [${0:tasks}]"],
     "description": "Await all tasks"
   },
   "Await Any": {
     "prefix": ["awaitany"],
-    "body": ["await.any([${0:tasks}])"],
+    "body": ["await any [${0:tasks}]"],
     "description": "Await any task"
   },
   "Type Alias": {
@@ -256,7 +256,7 @@
   },
   "Await Timeout": {
     "prefix": ["awaittimeout"],
-    "body": ["await.timeout(${1:task}, ${0:5000})"],
+    "body": ["await(timeout: ${0:5000}) ${1:task}"],
     "description": "Await with timeout (ms)"
   },
   "Cluster Start": {
@@ -312,13 +312,13 @@
     "prefix": ["awaitt"],
     "body": [
       "try {",
-      "\tlet ${1:result} = await.timeout(${2:task}, ${3:5000})",
+      "\tlet ${1:result} = await(timeout: ${3:5000}) ${2:task}",
       "\t$0",
       "} catch (e) {",
       "\tprint(\"timeout: \" + e)",
       "}"
     ],
-    "description": "await.timeout with error handling"
+    "description": "await with timeout and error handling"
   },
   "Result Match": {
     "prefix": ["resultmatch"],
@@ -373,5 +373,60 @@
     "prefix": ["fswrite"],
     "body": ["fs.write(${1:\"path\"}, ${0:text})"],
     "description": "Write string to file"
+  },
+  "Struct": {
+    "prefix": ["struct"],
+    "body": ["struct ${1:Name} {", "\t${2:field}: ${3:type}", "}"],
+    "description": "Struct definition"
+  },
+  "For Range": {
+    "prefix": ["forto", "forrange"],
+    "body": ["for (let ${1:i} = ${2:0} to ${3:10}) {", "\t$0", "}"],
+    "description": "For-to range loop"
+  },
+  "Operator Overload": {
+    "prefix": ["operator", "opoverload"],
+    "body": ["operator ${1:+}(${2:other}: ${3:Self}): ${3:Self} {", "\t$0", "}"],
+    "description": "Operator overload"
+  },
+  "Interface Implementation": {
+    "prefix": ["impl", "classimpl"],
+    "body": ["class ${1:Name} implements ${2:Interface} {", "\t${3:method}(${4:params}) {", "\t\t$0", "\t}", "}"],
+    "description": "Class implementing interface"
+  },
+  "Generic Class": {
+    "prefix": ["classg", "classgeneric"],
+    "body": ["class ${1:Box}<${2:T}> {", "\tvalue: ${2:T}", "\t", "\tconstructor(value: ${2:T}) {", "\t\tthis.value = value", "\t}", "\t$0", "}"],
+    "description": "Generic class"
+  },
+  "Generic Function": {
+    "prefix": ["fng", "fngeneric"],
+    "body": ["fn ${1:identity}<${2:T}>(${3:x}: ${2:T}): ${2:T} {", "\t$0", "}"],
+    "description": "Generic function"
+  },
+  "Final Class": {
+    "prefix": ["finalclass"],
+    "body": ["final class ${1:Name} {", "\tconstructor(${2:params}) {", "\t\t$0", "\t}", "}"],
+    "description": "Final (non-inheritable) class"
+  },
+  "Abstract Class": {
+    "prefix": ["abstractclass"],
+    "body": ["abstract class ${1:Name} {", "\tabstract ${2:method}(${3:params}): ${4:type}", "\t$0", "}"],
+    "description": "Abstract class"
+  },
+  "Import From": {
+    "prefix": ["impfrom", "importfrom"],
+    "body": ["import { ${1:symbol} } from ${0:module}"],
+    "description": "Import specific symbols from module"
+  },
+  "Raw String": {
+    "prefix": ["rstr", "rawstring"],
+    "body": ["r\"${0}\""],
+    "description": "Raw string (no escape processing)"
+  },
+  "CoroPool": {
+    "prefix": ["coropool", "pool"],
+    "body": ["const ${1:pool} = CoroPool(${2:4})", "for (let ${3:item} in ${4:items}) {", "\t${1:pool}.submit(fn() {", "\t\t$0", "\t})", "}", "${1:pool}.wait()"],
+    "description": "CoroPool parallel task execution"
   }
 }

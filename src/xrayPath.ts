@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -71,10 +72,15 @@ export function resolveXrayPath(
         };
     }
 
-    // 3. Fall back to PATH
-    return {
-        path: binaryName(),
-        source: 'path',
-        verified: false
-    };
+    // 3. Fall back to PATH — try to verify it actually exists.
+    const name = binaryName();
+    let verified = false;
+    try {
+        const cmd = process.platform === 'win32' ? `where ${name}` : `which ${name}`;
+        execSync(cmd, { stdio: 'pipe', timeout: 3000 });
+        verified = true;
+    } catch {
+        /* binary not found on PATH */
+    }
+    return { path: name, source: 'path', verified };
 }

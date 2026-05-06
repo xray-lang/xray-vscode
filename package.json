@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
@@ -44,8 +44,8 @@
         "extensions": [".xr"],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./icons/icon.png",
-          "dark": "./icons/icon.png"
+          "light": "./icons/file-icon-light.svg",
+          "dark": "./icons/file-icon-dark.svg"
         }
       }
     ],
@@ -218,10 +218,20 @@
         "command": "xray.collectDiagnostics",
         "title": "Xray: Collect Diagnostic Info",
         "category": "Xray"
+      },
+      {
+        "command": "xray.runFile",
+        "title": "Xray: Run Current File",
+        "category": "Xray"
       }
     ],
     "menus": {
       "editor/title/run": [
+        {
+          "command": "xray.runFile",
+          "when": "resourceLangId == xray",
+          "group": "navigation@0"
+        },
         {
           "command": "xray.startDebugging",
           "when": "resourceLangId == xray",
@@ -230,6 +240,10 @@
       ],
       "commandPalette": [
         {
+          "command": "xray.runFile",
+          "when": "resourceLangId == xray"
+        },
+        {
           "command": "xray.startDebugging",
           "when": "resourceLangId == xray"
         }
@@ -237,9 +251,15 @@
     },
     "keybindings": [
       {
-        "command": "xray.startDebugging",
+        "command": "xray.runFile",
         "key": "ctrl+f5",
         "mac": "cmd+f5",
+        "when": "resourceLangId == xray"
+      },
+      {
+        "command": "xray.startDebugging",
+        "key": "ctrl+shift+f5",
+        "mac": "cmd+shift+f5",
         "when": "resourceLangId == xray"
       },
       {
@@ -254,8 +274,6 @@
         "type": "xray",
         "label": "Xray Debug",
         "languages": ["xray"],
-        "program": "./out/debugAdapter.js",
-        "runtime": "node",
         "configurationAttributes": {
           "launch": {
             "required": ["program"],
@@ -377,7 +395,7 @@
     "watch": "tsc -watch -p ./",
     "bundle": "node esbuild.config.mjs",
     "bundle-watch": "node esbuild.config.mjs --watch",
-    "package-ext": "npm run check-types && npm run bundle",
+    "package-ext": "npm run check-types && npm run clean && npm run bundle",
     "check-types": "tsc -p ./ --noEmit",
     "package": "vsce package --no-dependencies",
     "publish": "vsce publish --no-dependencies",

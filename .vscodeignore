@@ -1,20 +1,31 @@
+# Source / dev tooling — never ship these to the marketplace.
+src/**
+test/**
+tests/**
+scripts/**
+.github/**
 .vscode/**
 .vscode-test/**
 .git/**
 .gitignore
-.github/**
-node_modules/**
-src/**
-test/**
+.gitattributes
+.editorconfig
+**/.eslintrc.*
+**/.prettierrc*
+esbuild.config.mjs
 **/tsconfig.json
 **/tsconfig.*.json
-**/.eslintrc.*
+
+# Generated / artifact files.
+*.vsix
 **/*.map
 **/*.ts
 !out/**/*.js
 !out/**/*.js.map
-esbuild.config.mjs
-scripts/**
-*.vsix
 **/.DS_Store
 package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# bin/ is intentionally NOT excluded — CI populates it with the
+# platform-specific xray binary right before packaging.

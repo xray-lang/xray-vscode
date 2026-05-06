@@ -4,27 +4,10 @@
  * ```xray fenced blocks in `.md` files render with consistent colouring.
  */
 
-const KEYWORDS = new Set([
-    'let', 'const', 'fn', 'return', 'if', 'else', 'while', 'for', 'in', 'is', 'to',
-    'break', 'continue', 'class', 'extends', 'constructor', 'this', 'base',
-    'new', 'static', 'try', 'catch', 'finally', 'throw', 'import', 'export',
-    'from', 'as',
-    'go', 'await', 'select', 'case', 'default', 'after', 'defer', 'scope',
-    'cancel', 'cancelled', 'match', 'enum', 'shared', 'yield', 'type',
-    'interface', 'implements', 'abstract', 'override', 'private', 'public',
-    'super', 'operator'
-]);
-
-const LITERALS = new Set(['true', 'false', 'null']);
-
-const BUILTINS = new Set([
-    'print', 'dump', 'typeof', 'typename', 'int', 'float', 'string', 'bool',
-    'assert', 'assert_eq', 'assert_ne', 'assert_true', 'assert_false',
-    'copy', 'chr',
-    'Array', 'Map', 'Set', 'Bytes', 'Channel', 'Json', 'BigInt',
-    'StringBuilder', 'Exception', 'Regex', 'DateTime', 'CoroPool',
-    'Slice'
-]);
+import {
+    KEYWORDS, LITERALS,
+    BUILTIN_FUNCTIONS, BUILTIN_TYPES, PRIMITIVE_TYPES
+} from './xrayLanguage';
 
 interface Token {
     type: 'comment' | 'string' | 'number' | 'keyword' | 'literal' | 'builtin' | 'text';
@@ -76,6 +59,16 @@ function tokenize(code: string): Token[] {
             continue;
         }
 
+        // Raw strings: r"...", r'...', r`...`
+        if (c === 'r' && i + 1 < len && (code[i + 1] === '"' || code[i + 1] === "'" || code[i + 1] === '`')) {
+            const quote = code[i + 1];
+            let j = i + 2;
+            while (j < len && code[j] !== quote) j++;
+            tokens.push({ type: 'string', value: code.slice(i, Math.min(j + 1, len)) });
+            i = Math.min(j + 1, len);
+            continue;
+        }
+
         // Numbers
         if (/[0-9]/.test(c)) {
             let j = i;
@@ -85,6 +78,9 @@ function tokenize(code: string): Token[] {
             } else if (c === '0' && (code[i + 1] === 'b' || code[i + 1] === 'B')) {
                 j = i + 2;
                 while (j < len && /[01_]/.test(code[j])) j++;
+            } else if (c === '0' && (code[i + 1] === 'o' || code[i + 1] === 'O')) {
+                j = i + 2;
+                while (j < len && /[0-7_]/.test(code[j])) j++;
             } else {
                 while (j < len && /[0-9._]/.test(code[j])) j++;
                 if (j < len && (code[j] === 'e' || code[j] === 'E')) {
@@ -93,6 +89,8 @@ function tokenize(code: string): Token[] {
                     while (j < len && /[0-9]/.test(code[j])) j++;
                 }
             }
+            // BigInt suffix
+            if (j < len && code[j] === 'n') j++;
             tokens.push({ type: 'number', value: code.slice(i, j) });
             i = j;
             continue;
@@ -107,7 +105,7 @@ function tokenize(code: string): Token[] {
                 tokens.push({ type: 'keyword', value: word });
             } else if (LITERALS.has(word)) {
                 tokens.push({ type: 'literal', value: word });
-            } else if (BUILTINS.has(word)) {
+            } else if (BUILTIN_FUNCTIONS.has(word) || BUILTIN_TYPES.has(word) || PRIMITIVE_TYPES.has(word)) {
                 tokens.push({ type: 'builtin', value: word });
             } else {
                 tokens.push({ type: 'text', value: word });

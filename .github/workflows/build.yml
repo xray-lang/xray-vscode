@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  type-check:
+    name: TypeScript type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run check-types
+      - run: npm run bundle
+
+  package-matrix:
+    # Verify the .vsix can be produced on every supported target.
+    # Does NOT include a real xray binary (placeholder is enough for vsce package).
+    name: Package (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    needs: type-check
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - darwin-arm64
+          - darwin-x64
+          - linux-arm64
+          - linux-x64
+          - win32-x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Drop a placeholder binary so the .vsix is shaped like the real release.
+      - name: Stage placeholder binary
+        run: |
+          mkdir -p bin
+          if [[ "${{ matrix.target }}" == win32-* ]]; then
+            echo "placeholder" > bin/xray.exe
+          else
+            echo "placeholder" > bin/xray
+            chmod +x bin/xray
+          fi
+        shell: bash
+      - name: Package
+        run: ./scripts/package.sh ${{ matrix.target }}
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xray-lang-${{ matrix.target }}
+          path: '*.vsix'
+          retention-days: 7

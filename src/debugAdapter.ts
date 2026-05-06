@@ -1,6 +1,8 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { resolveXrayPath } from './xrayPath';
+import { KEYWORDS } from './xrayLanguage';
 
 // ---------------------------------------------------------------------------
 // Descriptor factory (launch -> spawn `xray dap`, attach -> TCP server)
@@ -144,7 +146,6 @@ class XrayDebugConfigurationProvider implements vscode.DebugConfigurationProvide
         config: vscode.DebugConfiguration
     ): vscode.ProviderResult<vscode.DebugConfiguration> {
         if (config.request === 'launch' && typeof config.program === 'string') {
-            const fs = require('fs') as typeof import('fs');
             if (!fs.existsSync(config.program)) {
                 return vscode.window
                     .showErrorMessage(`Script not found: ${config.program}`)
@@ -172,7 +173,7 @@ class XrayDebugConfigurationProvider implements vscode.DebugConfigurationProvide
  * paused, and unresolved names just don't render a value).
  */
 class XrayInlineValuesProvider implements vscode.InlineValuesProvider {
-    private static readonly DECL_RE = /\b(?:let|const)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+    private static readonly DECL_RE = /\b(?:shared\s+)?(?:let|const)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
     private static readonly FOR_RE =
         /\bfor\s*\(\s*(?:let|const)?\s*([A-Za-z_][A-Za-z0-9_]*)\b/g;
     private static readonly PARAM_RE =
@@ -252,13 +253,7 @@ class XrayInlineValuesProvider implements vscode.InlineValuesProvider {
     }
 }
 
-const KEYWORDS = new Set([
-    'let', 'const', 'fn', 'if', 'else', 'for', 'while', 'return', 'import',
-    'export', 'from', 'class', 'enum', 'interface', 'type', 'match', 'case',
-    'go', 'defer', 'await', 'select', 'after', 'scope', 'shared', 'break',
-    'continue', 'this', 'base', 'new', 'static', 'true', 'false', 'null',
-    'try', 'catch', 'finally', 'throw', 'in', 'is', 'to', 'as'
-]);
+// KEYWORDS imported from './xrayLanguage'
 
 function isKeyword(word: string): boolean {
     return KEYWORDS.has(word);
@@ -285,7 +280,7 @@ function isXrayDocument(doc: vscode.TextDocument): boolean {
 // Registration entry point
 // ---------------------------------------------------------------------------
 
-export function registerDebugProviders(context: vscode.ExtensionContext): void {
+export function registerDebugProviders(context: vscode.ExtensionContext): vscode.OutputChannel {
     const outputChannel = vscode.window.createOutputChannel('Xray Debug');
     context.subscriptions.push(outputChannel);
 
@@ -323,4 +318,5 @@ export function registerDebugProviders(context: vscode.ExtensionContext): void {
     );
 
     outputChannel.appendLine('[xray-dap] providers registered');
+    return outputChannel;
 }

@@ -1,10 +1,7 @@
 // esbuild bundler for the Xray VS Code extension.
 // Produces:
-//   out/extension.js      - main activation entry
-//   out/debugAdapter.js   - standalone node entry for the debug adapter (kept for
-//                           backward compatibility with the `debuggers[].program`
-//                           declaration, even though DAP is actually started via
-//                           DebugAdapterDescriptorFactory)
+//   out/extension.js  - main activation entry (DAP is registered via
+//                       DebugAdapterDescriptorFactory inside the extension)
 //
 // Usage:
 //   node esbuild.config.mjs           # one-shot production bundle
@@ -30,8 +27,7 @@ const common = {
 };
 
 const targets = [
-    { entryPoints: ['src/extension.ts'], outfile: 'out/extension.js' },
-    { entryPoints: ['src/debugAdapter.ts'], outfile: 'out/debugAdapter.js' }
+    { entryPoints: ['src/extension.ts'], outfile: 'out/extension.js' }
 ];
 
 async function run() {

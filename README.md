@@ -31,21 +31,48 @@ This extension ships with a bundled `xray` binary that provides both the Languag
 
 ## Installation
 
-### From VSIX (recommended)
+### From the Marketplace (recommended)
+
+Search **"Xray Language"** in the Extensions panel, or:
+
+```
+ext install xray-lang.xray-lang
+```
+
+The marketplace serves a **platform-specific build** for your OS / arch
+that already bundles the `xray` binary, so no further configuration is
+required.
+
+### From a local VSIX
 
 1. Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
 2. Run **Extensions: Install from VSIX...**
-3. Select the `xray-lang-x.x.x.vsix` file
+3. Select the `xray-lang-<target>-x.x.x.vsix` file matching your platform
 
 ### Build from source
 
+The extension supports **platform-specific packaging** via
+`scripts/package.sh`. Place a prebuilt `xray` binary into `bin/` (or pass
+its path as the second argument), then:
+
 ```bash
 npm install
-npm run package-ext    # type-check + esbuild bundle into out/
-npm run package        # produces xray-lang-x.x.x.vsix
+npm run check-types
+
+# Package for the host platform (auto-detected):
+./scripts/package.sh
+
+# Or for a specific target (vsce platform identifier):
+./scripts/package.sh darwin-arm64
+./scripts/package.sh darwin-x64
+./scripts/package.sh linux-x64
+./scripts/package.sh win32-x64
+
+# Package + stage a custom binary in one step:
+./scripts/package.sh linux-x64 /path/to/xray
 ```
 
-The `.vsix` file can then be installed as described above.
+This produces `xray-lang-<target>-x.x.x.vsix` in the project root.
 
 ### Development mode
 
@@ -146,7 +173,8 @@ Add debug configurations to `.vscode/launch.json`:
 
 | Command | Default keybinding | Description |
 |---------|---------------------|-------------|
-| `Xray: Debug Current File` | `Cmd/Ctrl+F5` | Launch a debug session for the active `.xr` file |
+| `Xray: Run Current File` | `Cmd/Ctrl+F5` | Run the active `.xr` file in an integrated terminal |
+| `Xray: Debug Current File` | `Cmd/Ctrl+Shift+F5` | Launch a debug session for the active `.xr` file |
 | `Xray: Restart Language Server` | `Cmd/Ctrl+Shift+Alt+R` | Restart the LSP server |
 | `Xray: Start Language Server` | — | Start a stopped server |
 | `Xray: Stop Language Server` | — | Stop the running server |
@@ -177,20 +205,38 @@ Add debug configurations to `.vscode/launch.json`:
 
 ## Requirements
 
-The extension bundles the `xray` binary (`bin/xray`) which provides both:
+The marketplace publishes **platform-specific builds** that bundle a
+prebuilt `xray` binary at `<extension>/bin/xray` (or `xray.exe` on
+Windows). The extension uses the bundled binary to run both:
 
 - **Language Server** — invoked as `xray lsp --stdio`
 - **Debug Adapter** — invoked as `xray dap`
 
-To use a custom build, set `xray.lsp.path` and/or `xray.debug.path` in VS Code settings, or ensure `xray` is available on your `PATH`.
+### Supported platforms
 
-Build from source:
+| Marketplace target | Binary |
+|--------------------|--------|
+| macOS arm64 (Apple Silicon) | `bin/xray` |
+| macOS x64 (Intel) | `bin/xray` |
+| Linux x64 | `bin/xray` |
+| Linux arm64 | `bin/xray` |
+| Windows x64 | `bin/xray.exe` |
+
+A "universal" build without a bundled binary is also available; in that
+case set `xray.lsp.path` / `xray.debug.path` in VS Code settings, or
+ensure `xray` is available on your `PATH`.
+
+### Building xray from source
 
 ```bash
 cd /path/to/xray
 cmake -B build-release -DCMAKE_BUILD_TYPE=Release
 cmake --build build-release -j8
 ```
+
+Then point the extension at the freshly built binary, either by setting
+`xray.lsp.path` or by copying it into `bin/xray` before running
+`scripts/package.sh`.
 
 ## License
 

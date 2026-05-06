@@ -118,6 +118,37 @@
           ]
         },
         {
+          "name": "string.raw.template.xray",
+          "begin": "r`",
+          "end": "`",
+          "patterns": [
+            {
+              "name": "meta.embedded.expression.xray",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
+              },
+              "endCaptures": {
+                "0": { "name": "punctuation.definition.template-expression.end.xray" }
+              },
+              "patterns": [
+                { "include": "$self" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "string.raw.double.xray",
+          "begin": "r\"",
+          "end": "\""
+        },
+        {
+          "name": "string.raw.single.xray",
+          "begin": "r'",
+          "end": "'"
+        },
+        {
           "name": "string.regexp.xray",
           "begin": "(?<=[=(,:\\[!&|?])\\s*/(?![/*\\s])",
           "end": "/[gimsuy]*",
@@ -149,6 +180,10 @@
           "match": "\\b[0-9][0-9_]*\\.[0-9][0-9_]*([eE][+-]?[0-9_]+)?\\b"
         },
         {
+          "name": "constant.numeric.bigint.xray",
+          "match": "\\b[0-9][0-9_]*n\\b"
+        },
+        {
           "name": "constant.numeric.integer.xray",
           "match": "\\b[0-9][0-9_]*\\b"
         }
@@ -166,7 +201,7 @@
         },
         {
           "name": "keyword.control.xray",
-          "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|case|default|yield|after)\\b"
+          "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|case|default|yield)\\b"
         },
         {
           "name": "keyword.declaration.let.xray",
@@ -182,11 +217,11 @@
         },
         {
           "name": "keyword.declaration.type.xray",
-          "match": "\\b(class|interface|enum|type)\\b"
+          "match": "\\b(class|struct|interface|enum|type)\\b"
         },
         {
           "name": "storage.modifier.xray",
-          "match": "\\b(static|private|public|abstract|override|shared)\\b"
+          "match": "\\b(static|private|public|abstract|override|shared|final)\\b"
         },
         {
           "name": "keyword.operator.overload.xray",
@@ -194,7 +229,7 @@
         },
         {
           "name": "keyword.class.xray",
-          "match": "\\b(extends|implements|constructor|this|super|new)\\b"
+          "match": "\\b(extends|implements|constructor|this|super|new|base)\\b"
         },
         {
           "name": "keyword.exception.xray",
@@ -206,11 +241,11 @@
         },
         {
           "name": "keyword.concurrency.xray",
-          "match": "\\b(go|await|select|defer|scope|cancel|cancelled|after)\\b"
+          "match": "\\b(go|await|select|defer|scope|cancel|cancelled|after|ref|move)\\b"
         },
         {
           "name": "keyword.other.xray",
-          "match": "\\b(base)\\b"
+          "match": "\\b(_)\\b"
         }
       ]
     },
@@ -324,11 +359,11 @@
         },
         {
           "name": "support.type.primitive.xray",
-          "match": "\\b(int|float|string|bool|void|any|unknown|never)\\b"
+          "match": "\\b(int|int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|float32|float64|string|bool|void|any|unknown|never)\\b"
         },
         {
           "name": "support.type.builtin.xray",
-          "match": "\\b(Array|Map|Set|Json|Bytes|Slice|Channel|BigInt|StringBuilder|Exception|Error|Regex|DateTime|CoroPool|Coro|Task|Result|Option)\\b"
+          "match": "\\b(Array|Map|Set|Json|Bytes|Slice|Channel|BigInt|Range|StringBuilder|Exception|Error|Regex|DateTime|CoroPool|Coro|Task|Result|Option)\\b"
         }
       ]
     },
@@ -370,7 +405,7 @@
         },
         {
           "name": "keyword.operator.comparison.xray",
-          "match": "(==|!=|<=|>=|<|>)"
+          "match": "(===|!==|==|!=|<=|>=|<|>)"
         },
         {
           "name": "keyword.operator.logical.xray",
@@ -378,11 +413,11 @@
         },
         {
           "name": "keyword.operator.arithmetic.xray",
-          "match": "(\\+|-|\\*|/|%|\\*\\*)"
+          "match": "(\\+\\+|--|\\+|-|\\*\\*|\\*|/|%)"
         },
         {
           "name": "keyword.operator.bitwise.xray",
-          "match": "(<<|>>|>>>|&|\\||\\^|~)"
+          "match": "(<<|>>|&|\\||\\^|~)"
         },
         {
           "name": "keyword.operator.assignment.xray",
@@ -393,7 +428,7 @@
           "match": "(=>|->)"
         },
         {
-          "name": "keyword.operator.spread.xray",
+          "name": "keyword.operator.range.xray",
           "match": "\\.\\.\\.?"
         }
       ]

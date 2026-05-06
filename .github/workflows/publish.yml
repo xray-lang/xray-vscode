@@ -1,0 +1,174 @@
+name: Publish
+
+# Publish a platform-specific .vsix to the VS Code Marketplace.
+#
+# Trigger:
+#   - workflow_dispatch (manual)
+#   - tag push matching v*  (e.g. v0.5.2)
+#
+# Required secrets:
+#   VSCE_PAT       - Azure DevOps Personal Access Token with Marketplace -> Manage scope
+#   OVSX_PAT       - (optional) Open VSX token to also publish to open-vsx.org
+#   GH_RELEASE_TOKEN - (optional) GH PAT to download xray binaries from a private release;
+#                     omit to use the workflow's default GITHUB_TOKEN against a public release
+#
+# Required vars:
+#   XRAY_RELEASE_TAG - tag in xray-lang/xray to download binaries from (e.g. v0.5.2)
+
+on:
+  workflow_dispatch:
+    inputs:
+      xray_release_tag:
+        description: 'Tag in xray-lang/xray to pull binaries from (default: same as this tag)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Build only, do not publish'
+        required: false
+        default: 'false'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package (${{ matrix.vsce_target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - vsce_target: darwin-arm64
+            xray_os: macos
+            xray_arch: arm64
+            bin_name: xray
+          - vsce_target: darwin-x64
+            xray_os: macos
+            xray_arch: x86_64
+            bin_name: xray
+          - vsce_target: linux-x64
+            xray_os: linux
+            xray_arch: x86_64
+            bin_name: xray
+          - vsce_target: linux-arm64
+            xray_os: linux
+            xray_arch: arm64
+            bin_name: xray
+          # win32-x64 enabled once xray release ships a Windows tarball
+          # - vsce_target: win32-x64
+          #   xray_os: windows
+          #   xray_arch: x86_64
+          #   bin_name: xray.exe
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Resolve xray release tag
+        id: resolve_tag
+        env:
+          INPUT_TAG: ${{ inputs.xray_release_tag }}
+          REF_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ -n "$INPUT_TAG" ]]; then
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$REF_TAG" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download xray binary for ${{ matrix.vsce_target }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.resolve_tag.outputs.tag }}
+          XRAY_OS: ${{ matrix.xray_os }}
+          XRAY_ARCH: ${{ matrix.xray_arch }}
+        run: |
+          set -euo pipefail
+          # Strip leading 'v' for tarball version (release uses 0.5.2, tag uses v0.5.2).
+          VERSION="${TAG#v}"
+          ARCHIVE="xray-${VERSION}-${XRAY_OS}-${XRAY_ARCH}.tar.gz"
+          echo "Downloading $ARCHIVE from xray-lang/xray@$TAG"
+          gh release download "$TAG" \
+              --repo xray-lang/xray \
+              --pattern "$ARCHIVE" \
+              --dir /tmp/xray-release
+          mkdir -p bin
+          tar -xzf "/tmp/xray-release/$ARCHIVE" -C /tmp/xray-release
+          # The tarball layout is xray-<version>-<os>-<arch>/bin/xray
+          EXTRACTED=$(find /tmp/xray-release -name '${{ matrix.bin_name }}' -type f -perm -u+x | head -n 1)
+          if [[ -z "$EXTRACTED" ]]; then
+              echo "Could not locate ${{ matrix.bin_name }} in the extracted tarball" >&2
+              find /tmp/xray-release -maxdepth 4 -type f >&2
+              exit 1
+          fi
+          cp "$EXTRACTED" "bin/${{ matrix.bin_name }}"
+          chmod +x "bin/${{ matrix.bin_name }}"
+          ls -l bin/
+
+      - name: Package
+        run: ./scripts/package.sh ${{ matrix.vsce_target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-lang-${{ matrix.vsce_target }}
+          path: '*.vsix'
+          retention-days: 30
+
+  publish:
+    name: Publish to Marketplace
+    runs-on: ubuntu-latest
+    needs: package
+    if: github.event_name == 'push' || inputs.dry_run != 'true'
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download all .vsix artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p dist
+          find artifacts -name '*.vsix' -exec mv {} dist/ \;
+          ls -l dist/
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [[ -z "$VSCE_PAT" ]]; then
+            echo "VSCE_PAT secret not set — skipping marketplace publish" >&2
+            exit 1
+          fi
+          for vsix in dist/*.vsix; do
+            echo "Publishing $vsix"
+            npx vsce publish --packagePath "$vsix" --no-dependencies -p "$VSCE_PAT"
+          done
+
+      - name: Publish to Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          for vsix in dist/*.vsix; do
+            echo "Publishing $vsix to Open VSX"
+            npx ovsx publish "$vsix" -p "$OVSX_PAT" || echo "Open VSX publish failed for $vsix"
+          done
