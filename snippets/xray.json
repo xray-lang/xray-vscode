@@ -46,7 +46,7 @@
   },
   "Channel": {
     "prefix": ["chan", "channel"],
-    "body": ["const ${1:ch} = Channel(${2:10})"],
+    "body": ["const ${1:ch} = new Channel(${2:10})"],
     "description": "Create a channel"
   },
   "Channel Send/Recv": {
@@ -246,12 +246,12 @@
   },
   "StringBuilder": {
     "prefix": ["sb", "stringbuilder"],
-    "body": ["let ${1:sb} = StringBuilder()", "${1:sb}.append(${2:\"hello\"}).append(${3:\" world\"})", "let ${4:result} = ${1:sb}.toString()"],
+    "body": ["let ${1:sb} = new StringBuilder()", "${1:sb}.append(${2:\"hello\"}).append(${3:\" world\"})", "let ${4:result} = ${1:sb}.toString()"],
     "description": "StringBuilder usage"
   },
   "Bytes": {
     "prefix": ["bytes"],
-    "body": ["let ${1:buf} = Bytes(${2:1024})"],
+    "body": ["let ${1:buf} = new Bytes(${2:1024})"],
     "description": "Create byte buffer"
   },
   "Await Timeout": {
@@ -287,7 +287,7 @@
   "Go With Return Channel": {
     "prefix": ["gochan"],
     "body": [
-      "const ${1:done} = Channel<${2:int}>()",
+      "const ${1:done} = new Channel<${2:int}>()",
       "go fn() {",
       "\t$0",
       "\t${1:done}.send(${3:0})",
@@ -426,7 +426,7 @@
   },
   "CoroPool": {
     "prefix": ["coropool", "pool"],
-    "body": ["const ${1:pool} = CoroPool(${2:4})", "for (let ${3:item} in ${4:items}) {", "\t${1:pool}.submit(fn() {", "\t\t$0", "\t})", "}", "${1:pool}.wait()"],
+    "body": ["const ${1:pool} = new CoroPool(${2:4})", "for (let ${3:item} in ${4:items}) {", "\t${1:pool}.submit(fn() {", "\t\t$0", "\t})", "}", "${1:pool}.wait()"],
     "description": "CoroPool parallel task execution"
   }
 }
