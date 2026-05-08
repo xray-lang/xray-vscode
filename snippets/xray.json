@@ -379,6 +379,16 @@
     "body": ["struct ${1:Name} {", "\t${2:field}: ${3:type}", "}"],
     "description": "Struct definition"
   },
+  "Function with in param": {
+    "prefix": ["fnin"],
+    "body": ["fn ${1:name}(${2:v}: in ${3:StructType}): ${4:void} {", "\t$0", "}"],
+    "description": "Function with readonly struct reference parameter"
+  },
+  "Function with ref param": {
+    "prefix": ["fnref"],
+    "body": ["fn ${1:name}(${2:v}: ref ${3:StructType}): ${4:void} {", "\t$0", "}"],
+    "description": "Function with mutable struct reference parameter"
+  },
   "For Range": {
     "prefix": ["forto", "forrange"],
     "body": ["for (let ${1:i} = ${2:0} to ${3:10}) {", "\t$0", "}"],
