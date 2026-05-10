@@ -414,6 +414,21 @@
     "body": ["fn ${1:identity}<${2:T}>(${3:x}: ${2:T}): ${2:T} {", "\t$0", "}"],
     "description": "Generic function"
   },
+  "Generic Function with Constraint": {
+    "prefix": ["fngc", "fngenericconstraint"],
+    "body": ["fn ${1:max}<${2:T}: ${3:Comparable}>(${4:a}: ${2:T}, ${5:b}: ${2:T}): ${2:T} {", "\t$0", "}"],
+    "description": "Generic function with single interface/class constraint"
+  },
+  "Generic Function with Multi Constraint": {
+    "prefix": ["fngmc", "fngenericmulti"],
+    "body": ["fn ${1:process}<${2:T}: ${3:Comparable} & ${4:Hashable}>(${5:item}: ${2:T}): ${2:T} {", "\t$0", "\treturn ${5:item}", "}"],
+    "description": "Generic function with multiple constraints (T: A & B)"
+  },
+  "Generic Function with Class Bound": {
+    "prefix": ["fngcb", "fngenericclassbound"],
+    "body": ["fn ${1:describe}<${2:T}: ${3:Animal}>(${4:a}: ${2:T}): ${5:string} {", "\t$0", "\treturn ${4:a}.${6:name}", "}"],
+    "description": "Generic function bounded by a class (T must be subclass of BaseClass)"
+  },
   "Final Class": {
     "prefix": ["finalclass"],
     "body": ["final class ${1:Name} {", "\tconstructor(${2:params}) {", "\t\t$0", "\t}", "}"],
