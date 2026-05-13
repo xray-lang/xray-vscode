@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
@@ -40,8 +40,13 @@
     "languages": [
       {
         "id": "xray",
-        "aliases": ["Xray", "xray"],
-        "extensions": [".xr"],
+        "aliases": [
+          "Xray",
+          "xray"
+        ],
+        "extensions": [
+          ".xr"
+        ],
         "configuration": "./language-configuration.json",
         "icon": {
           "light": "./icons/file-icon-light.svg",
@@ -58,7 +63,9 @@
       {
         "scopeName": "markdown.xray.codeblock",
         "path": "./syntaxes/xray-markdown.json",
-        "injectTo": ["text.html.markdown"],
+        "injectTo": [
+          "text.html.markdown"
+        ],
         "embeddedLanguages": {
           "meta.embedded.block.xray": "xray"
         }
@@ -82,7 +89,10 @@
         },
         "xray.lsp.transport": {
           "type": "string",
-          "enum": ["stdio", "tcp"],
+          "enum": [
+            "stdio",
+            "tcp"
+          ],
           "default": "stdio",
           "description": "LSP transport. Use 'tcp' only for debugging the server itself."
         },
@@ -93,19 +103,27 @@
         },
         "xray.lsp.trace.server": {
           "type": "string",
-          "enum": ["off", "messages", "verbose"],
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
           "default": "off",
           "description": "Traces the communication between VS Code and the Xray language server."
         },
         "xray.lsp.args": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": [],
           "description": "Extra command-line arguments passed to `xray lsp`."
         },
         "xray.lsp.env": {
           "type": "object",
-          "additionalProperties": { "type": "string" },
+          "additionalProperties": {
+            "type": "string"
+          },
           "default": {},
           "description": "Extra environment variables for the language server process."
         },
@@ -172,7 +190,11 @@
         },
         "xray.debug.console": {
           "type": "string",
-          "enum": ["internalConsole", "integratedTerminal", "externalTerminal"],
+          "enum": [
+            "internalConsole",
+            "integratedTerminal",
+            "externalTerminal"
+          ],
           "default": "internalConsole",
           "description": "Where the debugged program's stdout/stderr is displayed."
         },
@@ -273,10 +295,14 @@
       {
         "type": "xray",
         "label": "Xray Debug",
-        "languages": ["xray"],
+        "languages": [
+          "xray"
+        ],
         "configurationAttributes": {
           "launch": {
-            "required": ["program"],
+            "required": [
+              "program"
+            ],
             "properties": {
               "program": {
                 "type": "string",
@@ -286,7 +312,9 @@
               "args": {
                 "type": "array",
                 "description": "Command line arguments passed to the script",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "default": []
               },
               "cwd": {
@@ -297,7 +325,9 @@
               "env": {
                 "type": "object",
                 "description": "Environment variables passed to the script",
-                "additionalProperties": { "type": "string" },
+                "additionalProperties": {
+                  "type": "string"
+                },
                 "default": {}
               },
               "stopOnEntry": {
@@ -307,7 +337,11 @@
               },
               "console": {
                 "type": "string",
-                "enum": ["internalConsole", "integratedTerminal", "externalTerminal"],
+                "enum": [
+                  "internalConsole",
+                  "integratedTerminal",
+                  "externalTerminal"
+                ],
                 "default": "internalConsole",
                 "description": "Where the debugged program's stdout/stderr is displayed"
               },
@@ -324,7 +358,9 @@
             }
           },
           "attach": {
-            "required": ["port"],
+            "required": [
+              "port"
+            ],
             "properties": {
               "host": {
                 "type": "string",
