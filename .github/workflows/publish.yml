@@ -42,26 +42,17 @@ jobs:
       matrix:
         include:
           - vsce_target: darwin-arm64
-            xray_os: macos
-            xray_arch: arm64
+            xray_asset: xray-macos-arm64.tar.gz
             bin_name: xray
           - vsce_target: darwin-x64
-            xray_os: macos
-            xray_arch: x86_64
+            xray_asset: xray-macos-x64.tar.gz
             bin_name: xray
           - vsce_target: linux-x64
-            xray_os: linux
-            xray_arch: x86_64
+            xray_asset: xray-linux-x64.tar.gz
             bin_name: xray
-          - vsce_target: linux-arm64
-            xray_os: linux
-            xray_arch: arm64
-            bin_name: xray
-          # win32-x64 enabled once xray release ships a Windows tarball
-          # - vsce_target: win32-x64
-          #   xray_os: windows
-          #   xray_arch: x86_64
-          #   bin_name: xray.exe
+          - vsce_target: win32-x64
+            xray_asset: xray-windows-x64.zip
+            bin_name: xray.exe
     steps:
       - uses: actions/checkout@v4
 
@@ -88,22 +79,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.resolve_tag.outputs.tag }}
-          XRAY_OS: ${{ matrix.xray_os }}
-          XRAY_ARCH: ${{ matrix.xray_arch }}
+          XRAY_ASSET: ${{ matrix.xray_asset }}
         run: |
           set -euo pipefail
-          # Strip leading 'v' for tarball version (release uses 0.5.2, tag uses v0.5.2).
-          VERSION="${TAG#v}"
-          ARCHIVE="xray-${VERSION}-${XRAY_OS}-${XRAY_ARCH}.tar.gz"
-          echo "Downloading $ARCHIVE from xray-lang/xray@$TAG"
+          echo "Downloading $XRAY_ASSET from xray-lang/xray@$TAG"
           gh release download "$TAG" \
               --repo xray-lang/xray \
-              --pattern "$ARCHIVE" \
+              --pattern "$XRAY_ASSET" \
               --dir /tmp/xray-release
           mkdir -p bin
-          tar -xzf "/tmp/xray-release/$ARCHIVE" -C /tmp/xray-release
-          # The tarball layout is xray-<version>-<os>-<arch>/bin/xray
+          case "$XRAY_ASSET" in
+            *.tar.gz) tar -xzf "/tmp/xray-release/$XRAY_ASSET" -C /tmp/xray-release ;;
+            *.zip) unzip -q "/tmp/xray-release/$XRAY_ASSET" -d /tmp/xray-release ;;
+            *) echo "Unsupported archive: $XRAY_ASSET" >&2; exit 1 ;;
+          esac
           EXTRACTED=$(find /tmp/xray-release -name '${{ matrix.bin_name }}' -type f -perm -u+x | head -n 1)
+          if [[ -z "$EXTRACTED" ]]; then
+              EXTRACTED=$(find /tmp/xray-release -name '${{ matrix.bin_name }}' -type f | head -n 1)
+          fi
           if [[ -z "$EXTRACTED" ]]; then
               echo "Could not locate ${{ matrix.bin_name }} in the extracted tarball" >&2
               find /tmp/xray-release -maxdepth 4 -type f >&2

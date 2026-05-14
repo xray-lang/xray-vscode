@@ -2,6 +2,17 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 0.7.0 – 2026-05
+
+### Changed
+- Bundled Xray runtime updated to 0.7.0 for supported platform-specific
+  Marketplace builds.
+- Marketplace publish workflow now consumes the current Xray release asset
+  names for macOS, Linux, and Windows packages.
+
+### Added
+- Windows x64 platform-specific package with bundled `xray.exe`.
+
 ## 0.5.2 – 2026-04
 
 > The extension version is now kept in lock-step with the `xray` core
