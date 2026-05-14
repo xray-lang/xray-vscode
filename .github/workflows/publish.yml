@@ -50,6 +50,9 @@ jobs:
           - vsce_target: linux-x64
             xray_asset: xray-linux-x64.tar.gz
             bin_name: xray
+          - vsce_target: linux-arm64
+            xray_asset: xray-linux-arm64.tar.gz
+            bin_name: xray
           - vsce_target: win32-x64
             xray_asset: xray-windows-x64.zip
             bin_name: xray.exe
