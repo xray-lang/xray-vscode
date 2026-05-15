@@ -2,6 +2,12 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.0.1 – 2026-05
+
+### Fixed
+- Reuse a single terminal for "Run Current File" instead of creating a
+  new terminal tab on every invocation.
+
 ## 1.0.0 – 2026-05
 
 Starting with this release the extension uses its own independent version

@@ -24,6 +24,7 @@ let statusItem: vscode.LanguageStatusItem | undefined;
 let debugOutputChannel: vscode.OutputChannel | undefined;
 let extensionContext: vscode.ExtensionContext | undefined;
 let intentionalStop = false;
+let runTerminal: vscode.Terminal | undefined;
 let autoRestartAttempts = 0;
 const MAX_AUTO_RESTART_ATTEMPTS = 5;
 const AUTO_RESTART_BASE_DELAY_MS = 1000;
@@ -81,6 +82,14 @@ export async function activate(context: vscode.ExtensionContext) {
             }
             if (e.affectsConfiguration('xray.server.showStatusBar')) {
                 toggleStatusItem();
+            }
+        })
+    );
+
+    context.subscriptions.push(
+        vscode.window.onDidCloseTerminal((t) => {
+            if (t === runTerminal) {
+                runTerminal = undefined;
             }
         })
     );
@@ -435,12 +444,11 @@ function registerCommands(context: vscode.ExtensionContext): void {
             const filePath = editor.document.uri.fsPath;
             const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? path.dirname(filePath);
             const resolved = resolveXrayPath(extensionContext!, 'xray.lsp.path');
-            const terminal = vscode.window.createTerminal({
-                name: `Xray: ${path.basename(filePath)}`,
-                cwd
-            });
-            terminal.show();
-            terminal.sendText(`${resolved.path} run "${filePath}"`);
+            if (!runTerminal || runTerminal.exitStatus !== undefined) {
+                runTerminal = vscode.window.createTerminal({ name: 'Xray Run', cwd });
+            }
+            runTerminal.show();
+            runTerminal.sendText(`${resolved.path} run "${filePath}"`);
         }),
         vscode.commands.registerCommand('xray.collectDiagnostics', async () => {
             const doc = await buildDiagnosticDocument();
