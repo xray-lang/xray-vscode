@@ -2,6 +2,21 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.0.4 – 2026-05
+
+### Fixed
+- Detach LSP startup from `activate()`. Awaiting `startLsp()` could
+  block `activate()` from resolving on hosts where the language
+  server bound slowly, which in turn caused VS Code / Windsurf to
+  silently drop every Run File click, command palette invocation,
+  and keybinding for this extension. The Run button now works even
+  when the language server is unavailable or slow to start.
+
+### Added
+- `docs/troubleshooting.md` documenting the `activate()`-must-resolve-fast
+  contract, the symptom signature, and a notification-based debugging
+  recipe for diagnosing future "the button does nothing" reports.
+
 ## 1.0.3 – 2026-05
 
 ### Fixed

@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
