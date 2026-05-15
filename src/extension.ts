@@ -31,6 +31,34 @@ const AUTO_RESTART_BASE_DELAY_MS = 1000;
 
 // ---------------------------------------------------------------------------
 // Activation
+//
+// CRITICAL: activate() MUST resolve quickly.
+//
+// VS Code (and forks like Windsurf) does NOT route command invocations,
+// menu clicks, keybindings, or any UI events to this extension until the
+// Promise returned by activate() resolves. If activate() is still pending,
+// every Run File click, every "Xray: ..." command in the palette, and every
+// keybinding silently does nothing — the user sees no error, just a dead
+// button. The extension appears installed and active in the UI, registered
+// commands show up in vscode.commands.getCommands(), but their handlers
+// never fire.
+//
+// Therefore:
+//   - Do NOT `await` long-running or potentially blocking operations here.
+//   - Anything that may hang (LSP startup, network, child processes, etc.)
+//     must be fired off with `void ...catch(handle)` and run in the
+//     background.
+//   - Synchronous setup (command/menu/provider registration) must come
+//     first and never throw uncaught — wrap risky registrations in try/catch
+//     so a failure in one subsystem does not prevent the others from being
+//     registered.
+//
+// This rule was learned the hard way: in xray-vscode 1.0.x prior to 1.0.3,
+// activate() awaited LSP startup. On hosts where the language server bound
+// slowly or hung, activate() never resolved, so the editor-title Run button
+// and every Xray command silently no-op'd — even though every diagnostic we
+// could run from inside activate confirmed the commands had been registered
+// correctly. The fix is to detach LSP startup with `void startLsp().catch(...)`.
 // ---------------------------------------------------------------------------
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -41,8 +69,17 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(outputChannel, traceChannel);
 
     createStatusItem(context);
-    debugOutputChannel = registerDebugProviders(context);
+    // Register commands first so a failure in debug provider setup
+    // (e.g. host editors that don't support some debug APIs) cannot
+    // prevent xray.runFile from being registered.
     registerCommands(context);
+    try {
+        debugOutputChannel = registerDebugProviders(context);
+    } catch (err) {
+        outputChannel.appendLine(
+            `[xray] debug provider registration failed: ${stringifyError(err)}`
+        );
+    }
 
     // Restart LSP on relevant config changes.
     context.subscriptions.push(
@@ -94,11 +131,14 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    try {
-        await startLsp();
-    } catch (err) {
+    // Start the LSP asynchronously so that activate() returns promptly even
+    // if the language server hangs or takes a long time to spin up. VS Code
+    // does not route command invocations to this extension until activate()
+    // resolves, so any blocking work here makes Run File and other commands
+    // appear unresponsive.
+    void startLsp().catch((err) => {
         handleStartupFailure(err);
-    }
+    });
 
     // Markdown code-block highlighter (for hover / Markdown preview of .md docs).
     return {

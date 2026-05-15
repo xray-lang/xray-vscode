@@ -238,6 +238,13 @@ Then point the extension at the freshly built binary, either by setting
 `xray.lsp.path` or by copying it into `bin/xray` before running
 `scripts/package.sh`.
 
+## Troubleshooting
+
+If the Run File button does nothing, commands appear in the palette but
+selecting them is a no-op, or features stop working after a host upgrade,
+see `docs/troubleshooting.md` for diagnosed failure modes and the rules
+maintainers must keep `activate()` aligned with.
+
 ## License
 
 MIT License
