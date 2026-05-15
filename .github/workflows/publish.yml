@@ -160,11 +160,14 @@ jobs:
           done
 
       - name: Publish to Open VSX
-        if: ${{ env.OVSX_PAT != '' }}
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
+          if [[ -z "$OVSX_PAT" ]]; then
+            echo "OVSX_PAT secret not set — skipping Open VSX publish"
+            exit 0
+          fi
           for vsix in dist/*.vsix; do
             echo "Publishing $vsix to Open VSX"
-            npx ovsx publish "$vsix" -p "$OVSX_PAT" || echo "Open VSX publish failed for $vsix"
+            npx ovsx publish "$vsix" -p "$OVSX_PAT"
           done
