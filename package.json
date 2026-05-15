@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
@@ -253,26 +253,19 @@
       }
     ],
     "menus": {
-      "editor/title/run": [
+      "editor/title": [
         {
           "command": "xray.runFile",
           "when": "resourceLangId == xray || resourceExtname == .xr",
           "group": "navigation@0"
-        },
-        {
-          "command": "xray.startDebugging",
-          "when": "resourceLangId == xray || resourceExtname == .xr",
-          "group": "navigation@1"
         }
       ],
       "commandPalette": [
         {
-          "command": "xray.runFile",
-          "when": "resourceLangId == xray || resourceExtname == .xr"
+          "command": "xray.runFile"
         },
         {
-          "command": "xray.startDebugging",
-          "when": "resourceLangId == xray || resourceExtname == .xr"
+          "command": "xray.startDebugging"
         }
       ]
     },

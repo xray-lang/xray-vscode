@@ -448,7 +448,11 @@ function registerCommands(context: vscode.ExtensionContext): void {
             const filePath = editor.document.uri.fsPath;
             const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? path.dirname(filePath);
             const resolved = resolveXrayPath(extensionContext!, 'xray.lsp.path');
-            if (!runTerminal || runTerminal.exitStatus !== undefined) {
+            if (runTerminal && runTerminal.exitStatus !== undefined) {
+                runTerminal.dispose();
+                runTerminal = undefined;
+            }
+            if (!runTerminal) {
                 runTerminal = vscode.window.createTerminal({ name: 'Xray Run', cwd });
             }
             runTerminal.show();

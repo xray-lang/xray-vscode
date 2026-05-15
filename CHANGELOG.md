@@ -2,6 +2,23 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.0.3 – 2026-05
+
+### Fixed
+- Run File button on the editor title bar now appears as a play icon
+  (▶) and is wired through `editor/title` so it works on Windsurf macOS,
+  which renders `editor/title/run` items as text.
+- Dispose the previous "Xray Run" terminal before creating a new one
+  so each run does not leave a dead terminal tab behind.
+- Drop `when` filters from the command palette entries so `Xray: Run File`
+  always appears, regardless of whether the host editor recognizes
+  `.xr` as the `xray` language id.
+
+### Changed
+- Publishing pipeline now produces a `universal` vsix alongside the five
+  platform-specific packages, providing a stable fallback for editors
+  whose marketplace clients prefer universal packages.
+
 ## 1.0.2 – 2026-05
 
 ### Fixed
