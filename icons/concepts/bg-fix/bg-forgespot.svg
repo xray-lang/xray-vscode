@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- BG-Fix: Forge Spot — combines the Forge warm-umber base with a directional
+       light from the upper-right. The right blade sits in the brightest pool,
+       maximizing both complementary contrast (warm vs cool) and local luminance. -->
+  <defs>
+    <linearGradient id="fsBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#2c1a16" />
+      <stop offset="100%" stop-color="#06030a" />
+    </linearGradient>
+
+    <!-- Directional light from upper-right -->
+    <radialGradient id="fsLight" cx="68%" cy="38%" r="55%">
+      <stop offset="0%"   stop-color="#fde68a" stop-opacity="0.18" />
+      <stop offset="40%"  stop-color="#f59e0b" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="fsRim" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.16" />
+      <stop offset="20%"  stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="80%"  stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+    <clipPath id="fsContainerClip">
+      <rect x="64" y="64" width="896" height="896" rx="200" />
+    </clipPath>
+  </defs>
+
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#fsBg)" />
+  <g clip-path="url(#fsContainerClip)">
+    <rect x="64" y="64" width="896" height="896" fill="url(#fsLight)" />
+  </g>
+  <rect x="65" y="65" width="894" height="894" rx="199" fill="none" stroke="url(#fsRim)" stroke-width="2" />
+
+  <g transform="translate(212, 212) scale(6)">
+    <g transform="translate(0, 5)" opacity="0.4">
+      <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+</svg>

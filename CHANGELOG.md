@@ -2,6 +2,26 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.0.0 – 2026-05
+
+Starting with this release the extension uses its own independent version
+number, decoupled from the Xray language version. Compatibility with a
+specific Xray runtime is noted in each release entry.
+
+Bundled Xray runtime: **0.7.0**
+
+### Fixed
+- Add explicit `activationEvents` so the extension activates reliably in
+  Windsurf and other VS Code forks when opening single `.xr` files outside
+  a workspace. Previously the run/debug commands were never registered in
+  this scenario, causing the editor title button and command palette
+  entries to silently no-op.
+- Relax the `commandPalette` `when` filter to also accept files matched
+  by extension, so the commands remain reachable when the host editor
+  assigns a non-`xray` `languageId` to `.xr` files.
+- Auto-save the file before running, so unsaved changes are always
+  included in the execution.
+
 ## 0.7.0 – 2026-05
 
 ### Changed

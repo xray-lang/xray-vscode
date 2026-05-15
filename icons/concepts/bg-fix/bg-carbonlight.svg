@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- BG-Fix: Carbon Light — overall luminance pushed up one full stop.
+       Background mid-tone ≈ 0.10 (vs Obsidian 0.02), so the stripe gaps
+       no longer crash to pitch black. At 32px the stripes blur into
+       "blue + mid-gray" instead of "blue + lost". Heaviest "industrial" reading. -->
+  <defs>
+    <linearGradient id="clBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#3e434c" />
+      <stop offset="100%" stop-color="#1c1f24" />
+    </linearGradient>
+    <linearGradient id="clTopGloss" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.10" />
+      <stop offset="50%"  stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+  </defs>
+
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#clBg)" />
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#clTopGloss)" />
+
+  <!-- 1px outer highlight ring -->
+  <rect x="65" y="65" width="894" height="894" rx="199" fill="none"
+        stroke="#ffffff" stroke-opacity="0.08" stroke-width="2" />
+
+  <g transform="translate(212, 212) scale(6)">
+    <g transform="translate(0, 5)" opacity="0.3">
+      <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+</svg>

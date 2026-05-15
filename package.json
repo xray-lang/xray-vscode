@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
@@ -36,6 +36,20 @@
     "dap"
   ],
   "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:xray",
+    "onCommand:xray.runFile",
+    "onCommand:xray.startDebugging",
+    "onCommand:xray.startServer",
+    "onCommand:xray.stopServer",
+    "onCommand:xray.restartServer",
+    "onCommand:xray.showServerLog",
+    "onCommand:xray.showDebugLog",
+    "onCommand:xray.collectDiagnostics",
+    "onDebug",
+    "onDebugResolve:xray",
+    "workspaceContains:**/*.xr"
+  ],
   "contributes": {
     "languages": [
       {
@@ -263,11 +277,11 @@
       "commandPalette": [
         {
           "command": "xray.runFile",
-          "when": "resourceLangId == xray"
+          "when": "resourceLangId == xray || resourceExtname == .xr"
         },
         {
           "command": "xray.startDebugging",
-          "when": "resourceLangId == xray"
+          "when": "resourceLangId == xray || resourceExtname == .xr"
         }
       ]
     },
@@ -445,6 +459,7 @@
     "@types/vscode": "^1.92.0",
     "@vscode/vsce": "^3.2.1",
     "esbuild": "^0.24.0",
+    "ovsx": "^0.10.12",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3"
   }

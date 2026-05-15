@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Concept: Obsidian — pure dark, premium minimal (Vision Pro / Things 3 style) -->
+  <defs>
+    <!-- Deep near-black vertical gradient -->
+    <linearGradient id="obsidianBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#1a1d22" />
+      <stop offset="100%" stop-color="#04060a" />
+    </linearGradient>
+
+    <!-- Inner edge rim light: bright at top, almost gone at bottom -->
+    <linearGradient id="obsidianRim" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.18" />
+      <stop offset="20%"  stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="80%"  stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <!-- Very subtle radial backlight behind X -->
+    <radialGradient id="obsidianGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#3b82f6" stop-opacity="0.10" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+    </radialGradient>
+
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Container -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#obsidianBg)" />
+
+  <!-- Subtle backlight glow behind logo -->
+  <circle cx="512" cy="512" r="380" fill="url(#obsidianGlow)" />
+
+  <!-- Inner rim highlight -->
+  <rect x="65" y="65" width="894" height="894" rx="199" fill="none"
+        stroke="url(#obsidianRim)" stroke-width="2" />
+
+  <!-- Logo (unchanged) -->
+  <g transform="translate(212, 212) scale(6)">
+    <g transform="translate(0, 5)" opacity="0.4">
+      <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+</svg>

@@ -423,11 +423,14 @@ function registerCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('xray.showDebugLog', () => {
             debugOutputChannel?.show(true);
         }),
-        vscode.commands.registerCommand('xray.runFile', () => {
+        vscode.commands.registerCommand('xray.runFile', async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor || (editor.document.languageId !== 'xray' && !editor.document.fileName.endsWith('.xr'))) {
                 vscode.window.showWarningMessage('Open a .xr file to run.');
                 return;
+            }
+            if (editor.document.isDirty) {
+                await editor.document.save();
             }
             const filePath = editor.document.uri.fsPath;
             const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? path.dirname(filePath);

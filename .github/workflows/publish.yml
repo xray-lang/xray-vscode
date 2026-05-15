@@ -1,25 +1,25 @@
 name: Publish
 
-# Publish a platform-specific .vsix to the VS Code Marketplace.
+# Publish a platform-specific .vsix to the VS Code Marketplace and Open VSX.
 #
-# Trigger:
+# Triggers:
+#   - repository_dispatch from xray-lang/xray release workflow (automatic)
 #   - workflow_dispatch (manual)
-#   - tag push matching v*  (e.g. v0.5.2)
+#   - tag push matching v*  (e.g. v1.0.0)
 #
 # Required secrets:
 #   VSCE_PAT       - Azure DevOps Personal Access Token with Marketplace -> Manage scope
 #   OVSX_PAT       - (optional) Open VSX token to also publish to open-vsx.org
 #   GH_RELEASE_TOKEN - (optional) GH PAT to download xray binaries from a private release;
 #                     omit to use the workflow's default GITHUB_TOKEN against a public release
-#
-# Required vars:
-#   XRAY_RELEASE_TAG - tag in xray-lang/xray to download binaries from (e.g. v0.5.2)
 
 on:
+  repository_dispatch:
+    types: [xray-release]
   workflow_dispatch:
     inputs:
       xray_release_tag:
-        description: 'Tag in xray-lang/xray to pull binaries from (default: same as this tag)'
+        description: 'Tag in xray-lang/xray to pull binaries from'
         required: false
         default: ''
       dry_run:
@@ -31,7 +31,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
@@ -70,13 +70,32 @@ jobs:
         id: resolve_tag
         env:
           INPUT_TAG: ${{ inputs.xray_release_tag }}
+          DISPATCH_TAG: ${{ github.event.client_payload.xray_tag }}
           REF_TAG: ${{ github.ref_name }}
         run: |
           if [[ -n "$INPUT_TAG" ]]; then
             echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          elif [[ -n "$DISPATCH_TAG" ]]; then
+            echo "tag=$DISPATCH_TAG" >> "$GITHUB_OUTPUT"
           else
             echo "tag=$REF_TAG" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Auto bump patch version (dispatch only)
+        if: github.event_name == 'repository_dispatch'
+        env:
+          XRAY_TAG: ${{ github.event.client_payload.xray_tag }}
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          IFS='.' read -r major minor patch <<< "$CURRENT"
+          NEW_VERSION="${major}.${minor}.$((patch + 1))"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${NEW_VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "Bumped version: $CURRENT -> $NEW_VERSION (xray $XRAY_TAG)"
 
       - name: Download xray binary for ${{ matrix.vsce_target }}
         env:
@@ -123,7 +142,7 @@ jobs:
     name: Publish to Marketplace
     runs-on: ubuntu-latest
     needs: package
-    if: github.event_name == 'push' || inputs.dry_run != 'true'
+    if: github.event_name == 'push' || github.event_name == 'repository_dispatch' || inputs.dry_run != 'true'
     environment: marketplace
     steps:
       - uses: actions/checkout@v4
@@ -171,3 +190,26 @@ jobs:
             echo "Publishing $vsix to Open VSX"
             npx ovsx publish "$vsix" -p "$OVSX_PAT"
           done
+
+      - name: Commit version bump
+        if: github.event_name == 'repository_dispatch'
+        env:
+          XRAY_TAG: ${{ github.event.client_payload.xray_tag }}
+        run: |
+          # Same bump logic as the package job — repo is freshly checked out
+          # so package.json still has the pre-bump version.
+          CURRENT=$(node -p "require('./package.json').version")
+          IFS='.' read -r major minor patch <<< "$CURRENT"
+          NEW_VERSION="${major}.${minor}.$((patch + 1))"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${NEW_VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git diff --cached --quiet && echo "No version change to commit" && exit 0
+          git commit -m "v${NEW_VERSION}: update bundled xray to ${XRAY_TAG}"
+          git push

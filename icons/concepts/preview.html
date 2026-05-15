@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Xray Icon Concepts</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1015;
+      --panel: #14181f;
+      --border: #232a35;
+      --text: #cdd5e0;
+      --muted: #6c7889;
+      --accent: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      padding: 36px 48px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--bg); z-index: 10;
+    }
+    h1 {
+      font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 4px;
+    }
+    .sub { color: var(--muted); font-size: 13px; }
+    nav { margin-top: 12px; display: flex; gap: 18px; font-size: 13px; }
+    nav a { color: var(--text); text-decoration: none; padding: 4px 0; border-bottom: 1px solid transparent; }
+    nav a:hover { border-color: var(--accent); }
+
+    section.section-head {
+      padding: 36px 48px 14px;
+    }
+    section.section-head h2 {
+      font-size: 17px; font-weight: 600; margin: 0 0 4px;
+    }
+    section.section-head p {
+      color: var(--muted); font-size: 13px; max-width: 760px; margin: 0; line-height: 1.55;
+    }
+
+    .grid {
+      padding: 16px 48px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 22px 18px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .card h3 { font-size: 14px; font-weight: 600; margin: 0; }
+    .card .desc { color: var(--muted); font-size: 12px; line-height: 1.55; margin-top: -8px; }
+    .hero {
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px; border-radius: 10px;
+      background: repeating-conic-gradient(#1c2230 0 25%, #161a23 0 50%) 50% / 22px 22px;
+    }
+    .hero img { width: 224px; height: 224px; display: block; border-radius: 49px; }
+
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; padding-top: 14px; border-top: 1px dashed var(--border);
+    }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .col span { font-size: 10.5px; color: var(--muted); }
+    .col img.s128 { width: 96px; height: 96px; border-radius: 21px; }
+    .col img.s64  { width: 64px; height: 64px; border-radius: 14px; }
+    .col img.s32  { width: 32px; height: 32px; border-radius: 7px; }
+    .col img.s16  { width: 16px; height: 16px; border-radius: 4px; }
+
+    code.path {
+      font-family: "SF Mono", ui-monospace, Menlo, monospace;
+      font-size: 11px; color: var(--muted);
+    }
+
+    /* Mass-comparison strip: only 32px and 16px side by side */
+    .strip {
+      padding: 16px 48px 32px;
+    }
+    .strip .scroll {
+      display: grid;
+      grid-template-columns: 80px repeat(6, 1fr);
+      gap: 14px;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+    }
+    .strip .label-cell {
+      font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .strip .icon-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .strip .icon-cell .name { font-size: 11px; color: var(--text); margin-top: 2px; }
+    .strip img.s32 { width: 32px; height: 32px; border-radius: 7px; }
+    .strip img.s16 { width: 16px; height: 16px; border-radius: 4px; }
+
+    /* Light surface for file-icon test */
+    .light {
+      margin-top: 4px; padding: 12px; border-radius: 10px;
+      background: #f3f4f6; display: flex; gap: 14px; align-items: center; justify-content: center;
+    }
+    .recommend { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: #1e293b; color: #93c5fd; border: 1px solid #334155; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Xray Logo 方案对比</h1>
+    <div class="sub">背景概念 + X 图标配色变体。重点关注 32 px / 16 px 缩略图的辨识度。</div>
+    <nav>
+      <a href="#variants">① X 配色变体（共 6 款，统一黑曜底）</a>
+      <a href="#strip">② 32/16 px 横向对比</a>
+      <a href="#bg">③ 背景概念（共 5 款）</a>
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       SECTION 1: X color/structure variants (the key fix area)
+       ============================================================ -->
+  <section class="section-head" id="variants">
+    <h2>① X 图标配色 / 结构变体</h2>
+    <p>统一使用 Obsidian 黑曜底色，仅调整右刀片的颜色或结构。当前蓝色 <code>#3b82f6</code> 在深底上对比度仅 ~5:1，缩到 32 px 时条纹结构开始消失。下面 6 款分别从 <b>提亮品牌色</b> / <b>补足结构</b> / <b>更换品牌色</b> / <b>放弃条纹</b> 4 个方向尝试。</p>
+  </section>
+  <div class="grid">
+
+    <section class="card">
+      <h3>Origin <span class="recommend">基线</span></h3>
+      <div class="desc">当前色 <code>#3b82f6</code>（Tailwind blue-500）。蓝绿冷调，深底对比 ~5:1。</div>
+      <div class="hero"><img src="variants/variant-origin.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-origin.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-origin.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-origin.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-origin.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-origin.svg</code>
+    </section>
+
+    <section class="card">
+      <h3>Sky <span class="recommend">推荐 ★</span></h3>
+      <div class="desc">改用 sky-400 <code>#38bdf8</code>，色相不变但纯度更高、亮度提升 ~25%。深底对比 ~7.5:1，缩小后条纹仍可辨识。</div>
+      <div class="hero"><img src="variants/variant-sky.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-sky.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-sky.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-sky.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-sky.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-sky.svg</code>
+    </section>
+
+    <section class="card">
+      <h3>Divider <span class="recommend">推荐 ★</span></h3>
+      <div class="desc">蓝色保持不变，但条纹间隙改填 slate-300 <code>#cbd5e1</code> 浅灰分隔线 — 即使蓝色淡化，条纹结构在 32 px 仍清晰，整体读作"蓝灰相间块"。</div>
+      <div class="hero"><img src="variants/variant-divider.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-divider.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-divider.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-divider.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-divider.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-divider.svg</code>
+    </section>
+
+    <section class="card">
+      <h3>Amber <span class="recommend">最强工业感 ★★</span></h3>
+      <div class="desc">换成 amber-500 <code>#f59e0b</code> 工业暖金色（CAT 卡特彼勒 / DeWalt / 法拉利车间风）。与冷调深底形成补色对比，深底对比 ~10:1，<b>所有尺寸都最跳</b>。色调最具"工业级"语感，但需要接受品牌色从蓝改成金。</div>
+      <div class="hero"><img src="variants/variant-amber.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-amber.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-amber.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-amber.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-amber.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-amber.svg</code>
+    </section>
+
+    <section class="card">
+      <h3>Cyan</h3>
+      <div class="desc">cyan-400 <code>#22d3ee</code>。介于 Sky 和荧光之间，更接近"医疗 X 光 / 示波器"的青色。对比 ~9:1，但偏极客/赛博，与"稳重克制"略冲突。</div>
+      <div class="hero"><img src="variants/variant-cyan.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-cyan.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-cyan.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-cyan.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-cyan.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-cyan.svg</code>
+    </section>
+
+    <section class="card">
+      <h3>Solid <span class="recommend">最稳清晰</span></h3>
+      <div class="desc">完全放弃条纹，右刀片改纯色 sky-400 <code>#38bdf8</code>，左刀片用米白 <code>#f1f5f9</code>。任何尺寸都不会丢结构，最"大品牌"。代价是失去原有的"条纹胶片"特征。</div>
+      <div class="hero"><img src="variants/variant-solid.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="variants/variant-solid.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="variants/variant-solid.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="variants/variant-solid.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="variants/variant-solid.svg" /><span>16 px</span></div>
+      </div>
+      <code class="path">variants/variant-solid.svg</code>
+    </section>
+  </div>
+
+  <!-- ============================================================
+       SECTION 2: Side-by-side 32px / 16px comparison
+       ============================================================ -->
+  <section class="section-head" id="strip">
+    <h2>② 32 / 16 px 横向对比</h2>
+    <p>这是问题最尖锐的尺寸。缩到这里仍清晰可辨，VSCode marketplace、Dock、taskbar、文件管理器小图标里才不会"虚一块"。</p>
+  </section>
+  <div class="strip">
+    <div class="scroll">
+      <div class="label-cell">32 px</div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-origin.svg" /><span class="name">Origin</span></div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-sky.svg" /><span class="name">Sky ★</span></div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-divider.svg" /><span class="name">Divider ★</span></div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-amber.svg" /><span class="name">Amber ★★</span></div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-cyan.svg" /><span class="name">Cyan</span></div>
+      <div class="icon-cell"><img class="s32" src="variants/variant-solid.svg" /><span class="name">Solid</span></div>
+
+      <div class="label-cell">16 px</div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-origin.svg" /><span class="name">Origin</span></div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-sky.svg" /><span class="name">Sky ★</span></div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-divider.svg" /><span class="name">Divider ★</span></div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-amber.svg" /><span class="name">Amber ★★</span></div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-cyan.svg" /><span class="name">Cyan</span></div>
+      <div class="icon-cell"><img class="s16" src="variants/variant-solid.svg" /><span class="name">Solid</span></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 3: Original 5 background concepts (kept for reference)
+       ============================================================ -->
+  <section class="section-head" id="bg">
+    <h2>③ 背景概念（5 款，X 图标保持原样）</h2>
+    <p>这些只换背景，X 图标用的还是原蓝色 <code>#3b82f6</code>。可以和上面的 X 配色变体自由组合：选定 X 配色后告诉我，再叠加你喜欢的背景。</p>
+  </section>
+  <div class="grid">
+    <section class="card">
+      <h3>Obsidian — 黑曜</h3>
+      <div class="desc">纯黑垂直渐变 + 顶部内描边高光 + 极弱蓝色背光。极简高端。</div>
+      <div class="hero"><img src="icon-obsidian.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="icon-obsidian.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="icon-obsidian.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="icon-obsidian.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="icon-obsidian.svg" /><span>16 px</span></div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Graphite — 石墨</h3>
+      <div class="desc">暗调拉丝金属渐变 + 顶部柔光。工业精密器械感。</div>
+      <div class="hero"><img src="icon-graphite.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="icon-graphite.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="icon-graphite.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="icon-graphite.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="icon-graphite.svg" /><span>16 px</span></div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Blueprint — 蓝图</h3>
+      <div class="desc">深海军蓝 + 双层工程网格 + 中心暗角。CAD / 工程师工作台气质。</div>
+      <div class="hero"><img src="icon-blueprint.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="icon-blueprint.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="icon-blueprint.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="icon-blueprint.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="icon-blueprint.svg" /><span>16 px</span></div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Steel — 钢铝</h3>
+      <div class="desc">对角金属渐变 + 方向光（左上亮 / 右下暗）。类 Apple 硬件。</div>
+      <div class="hero"><img src="icon-steel.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="icon-steel.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="icon-steel.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="icon-steel.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="icon-steel.svg" /><span>16 px</span></div>
+      </div>
+    </section>
+    <section class="card">
+      <h3>Monolith — 独石</h3>
+      <div class="desc">纯哑光炭黑零装饰，仅一道极弱光带。最克制，类 Linear / Cursor。</div>
+      <div class="hero"><img src="icon-monolith.svg" /></div>
+      <div class="row">
+        <div class="col"><img class="s128" src="icon-monolith.svg" /><span>96 px</span></div>
+        <div class="col"><img class="s64"  src="icon-monolith.svg" /><span>64 px</span></div>
+        <div class="col"><img class="s32"  src="icon-monolith.svg" /><span>32 px</span></div>
+        <div class="col"><img class="s16"  src="icon-monolith.svg" /><span>16 px</span></div>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Concept: Blueprint — deep navy + technical grid, engineer's workbench -->
+  <defs>
+    <linearGradient id="blueprintBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#1a2742" />
+      <stop offset="100%" stop-color="#070d1a" />
+    </linearGradient>
+
+    <!-- Major grid (128px) -->
+    <pattern id="blueprintMajor" patternUnits="userSpaceOnUse" width="128" height="128">
+      <path d="M128,0 L0,0 L0,128" fill="none" stroke="#5b9eff" stroke-width="1" opacity="0.10" />
+    </pattern>
+
+    <!-- Minor grid (32px) -->
+    <pattern id="blueprintMinor" patternUnits="userSpaceOnUse" width="32" height="32">
+      <path d="M32,0 L0,0 L0,32" fill="none" stroke="#5b9eff" stroke-width="0.5" opacity="0.05" />
+    </pattern>
+
+    <!-- Vignette: darken edges so center reads as the focal plane -->
+    <radialGradient id="blueprintVignette" cx="50%" cy="50%" r="60%">
+      <stop offset="60%"  stop-color="#000000" stop-opacity="0" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.35" />
+    </radialGradient>
+
+    <clipPath id="blueprintClip">
+      <rect x="64" y="64" width="896" height="896" rx="200" />
+    </clipPath>
+
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Base navy -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#blueprintBg)" />
+
+  <!-- Grid layers, clipped to squircle -->
+  <g clip-path="url(#blueprintClip)">
+    <rect x="64" y="64" width="896" height="896" fill="url(#blueprintMinor)" />
+    <rect x="64" y="64" width="896" height="896" fill="url(#blueprintMajor)" />
+    <rect x="64" y="64" width="896" height="896" fill="url(#blueprintVignette)" />
+  </g>
+
+  <!-- Logo (unchanged) -->
+  <g transform="translate(212, 212) scale(6)">
+    <g transform="translate(0, 5)" opacity="0.4">
+      <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+</svg>

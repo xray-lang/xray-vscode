@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Concept: Monolith — flat matte charcoal, near-zero ornament (Linear / Cursor style) -->
+  <defs>
+    <!-- Almost flat: tiny vertical gradient just to keep it from being lifeless -->
+    <linearGradient id="monolithBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#16191e" />
+      <stop offset="100%" stop-color="#0c0e12" />
+    </linearGradient>
+
+    <!-- One faint horizontal light band centered on the X for subtle depth -->
+    <linearGradient id="monolithBand" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="50%"  stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <pattern id="appStripes" patternUnits="userSpaceOnUse" width="100" height="8">
+      <rect x="0" y="0" width="100" height="5" fill="#3b82f6" />
+    </pattern>
+    <clipPath id="appRightBladeClip">
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Pure flat container -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#monolithBg)" />
+
+  <!-- Faint horizontal light band -->
+  <rect x="64" y="320" width="896" height="384" fill="url(#monolithBand)" />
+
+  <!-- Hairline outer ring (extremely subtle) -->
+  <rect x="64.5" y="64.5" width="895" height="895" rx="200" fill="none"
+        stroke="#ffffff" stroke-opacity="0.05" stroke-width="1" />
+
+  <!-- Logo (unchanged) -->
+  <g transform="translate(212, 212) scale(6)">
+    <g transform="translate(0, 5)" opacity="0.4">
+      <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#000" />
+      <path d="M80,20 L60,20 L40,50 L70,90 L80,80 L60,50 Z" fill="#000" />
+    </g>
+    <path d="M20,20 L40,20 L60,50 L30,90 L20,80 L40,50 Z" fill="#ffffff" />
+    <g clip-path="url(#appRightBladeClip)">
+      <rect x="30" y="10" width="60" height="90" fill="url(#appStripes)" />
+    </g>
+  </g>
+</svg>
