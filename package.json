@@ -2,7 +2,7 @@
   "name": "xray-lang",
   "displayName": "Xray Language",
   "description": "Language support for Xray - Lightweight typed scripting with native concurrency",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "xray-lang",
   "license": "MIT",
   "repository": {
@@ -37,18 +37,7 @@
   ],
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:xray",
-    "onCommand:xray.runFile",
-    "onCommand:xray.startDebugging",
-    "onCommand:xray.startServer",
-    "onCommand:xray.stopServer",
-    "onCommand:xray.restartServer",
-    "onCommand:xray.showServerLog",
-    "onCommand:xray.showDebugLog",
-    "onCommand:xray.collectDiagnostics",
-    "onDebug",
-    "onDebugResolve:xray",
-    "workspaceContains:**/*.xr"
+    "*"
   ],
   "contributes": {
     "languages": [
@@ -247,7 +236,8 @@
       },
       {
         "command": "xray.startDebugging",
-        "title": "Xray: Debug Current File",
+        "title": "Debug File",
+        "icon": "$(debug-alt)",
         "category": "Xray"
       },
       {
@@ -257,7 +247,8 @@
       },
       {
         "command": "xray.runFile",
-        "title": "Xray: Run Current File",
+        "title": "Run File",
+        "icon": "$(play)",
         "category": "Xray"
       }
     ],
@@ -265,12 +256,12 @@
       "editor/title/run": [
         {
           "command": "xray.runFile",
-          "when": "resourceLangId == xray",
+          "when": "resourceLangId == xray || resourceExtname == .xr",
           "group": "navigation@0"
         },
         {
           "command": "xray.startDebugging",
-          "when": "resourceLangId == xray",
+          "when": "resourceLangId == xray || resourceExtname == .xr",
           "group": "navigation@1"
         }
       ],

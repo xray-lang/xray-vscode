@@ -434,8 +434,12 @@ function registerCommands(context: vscode.ExtensionContext): void {
         }),
         vscode.commands.registerCommand('xray.runFile', async () => {
             const editor = vscode.window.activeTextEditor;
-            if (!editor || (editor.document.languageId !== 'xray' && !editor.document.fileName.endsWith('.xr'))) {
-                vscode.window.showWarningMessage('Open a .xr file to run.');
+            if (!editor) {
+                vscode.window.showWarningMessage('No active editor — open a .xr file first.');
+                return;
+            }
+            if (editor.document.languageId !== 'xray' && !editor.document.fileName.endsWith('.xr')) {
+                vscode.window.showWarningMessage(`Not a .xr file (languageId=${editor.document.languageId}, file=${editor.document.fileName})`);
                 return;
             }
             if (editor.document.isDirty) {
