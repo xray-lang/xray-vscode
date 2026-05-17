@@ -91,8 +91,33 @@
   },
   "Match Expression": {
     "prefix": ["match"],
-    "body": ["match ${1:value} {", "\t${2:pattern} => ${3:result},", "\t_ => ${0:default}", "}"],
+    "body": ["match (${1:value}) {", "\t${2:pattern} => ${3:result}", "\t_ => ${0:default}", "}"],
     "description": "Match expression"
+  },
+  "Match Tuple Pattern": {
+    "prefix": ["matchtuple"],
+    "body": [
+      "match (${1:tuple}) {",
+      "\t(${2:0}, ${3:_}) => ${4:result1}",
+      "\t(${5:x}, ${6:y}) if (${5:x} == ${6:y}) => ${7:result2}",
+      "\t_ => ${0:default}",
+      "}"
+    ],
+    "description": "Match expression with tuple patterns"
+  },
+  "Tuple Destructure": {
+    "prefix": ["lett", "lettuple"],
+    "body": ["let (${1:a}, ${2:b}) = ${0:expr}"],
+    "description": "Tuple destructuring let"
+  },
+  "Tuple Multi-Return": {
+    "prefix": ["fntuple", "fnmulti"],
+    "body": [
+      "fn ${1:name}(${2:params}): (${3:int}, ${4:int}) {",
+      "\treturn (${5:0}, ${0:0})",
+      "}"
+    ],
+    "description": "Function returning a tuple"
   },
   "Try-Catch": {
     "prefix": ["try", "trycatch"],
@@ -323,8 +348,8 @@
   "Result Match": {
     "prefix": ["resultmatch"],
     "body": [
-      "match ${1:result} {",
-      "\tOk(${2:value}) => ${3:handle_ok},",
+      "match (${1:result}) {",
+      "\tOk(${2:value}) => ${3:handle_ok}",
       "\tErr(${4:e}) => ${0:handle_err}",
       "}"
     ],
@@ -333,8 +358,8 @@
   "Option Match": {
     "prefix": ["optionmatch"],
     "body": [
-      "match ${1:opt} {",
-      "\tSome(${2:value}) => ${3:handle_some},",
+      "match (${1:opt}) {",
+      "\tSome(${2:value}) => ${3:handle_some}",
       "\tNone => ${0:handle_none}",
       "}"
     ],
