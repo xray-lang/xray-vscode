@@ -425,7 +425,7 @@
         },
         {
           "name": "keyword.operator.arrow.xray",
-          "match": "(=>|->)"
+          "match": "->"
         },
         {
           "name": "keyword.operator.range.xray",

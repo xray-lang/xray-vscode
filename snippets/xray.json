@@ -10,13 +10,13 @@
     "description": "Named function"
   },
   "Arrow Function": {
-    "prefix": ["arrow", "=>"],
-    "body": ["(${1:params}) => ${0:expr}"],
+    "prefix": ["arrow", "->"],
+    "body": ["(${1:params}) -> ${0:expr}"],
     "description": "Arrow function"
   },
   "Arrow Function Block": {
     "prefix": ["arrowb"],
-    "body": ["(${1:params}) => {", "\t$0", "}"],
+    "body": ["(${1:params}) -> {", "\t$0", "}"],
     "description": "Arrow function with block"
   },
   "Export Function": {
@@ -56,7 +56,7 @@
   },
   "Select": {
     "prefix": ["select"],
-    "body": ["select {", "\t${1:msg} from ${2:ch} => {", "\t\t$0", "\t}", "\tafter ${3:1000} => {", "\t\tprint(\"timeout\")", "\t}", "}"],
+    "body": ["select {", "\t${1:msg} from ${2:ch} -> {", "\t\t$0", "\t}", "\tafter ${3:1000} -> {", "\t\tprint(\"timeout\")", "\t}", "}"],
     "description": "Select statement"
   },
   "Shared Const": {
@@ -91,16 +91,16 @@
   },
   "Match Expression": {
     "prefix": ["match"],
-    "body": ["match (${1:value}) {", "\t${2:pattern} => ${3:result}", "\t_ => ${0:default}", "}"],
+    "body": ["match (${1:value}) {", "\t${2:pattern} -> ${3:result}", "\t_ -> ${0:default}", "}"],
     "description": "Match expression"
   },
   "Match Tuple Pattern": {
     "prefix": ["matchtuple"],
     "body": [
       "match (${1:tuple}) {",
-      "\t(${2:0}, ${3:_}) => ${4:result1}",
-      "\t(${5:x}, ${6:y}) if (${5:x} == ${6:y}) => ${7:result2}",
-      "\t_ => ${0:default}",
+      "\t(${2:0}, ${3:_}) -> ${4:result1}",
+      "\t(${5:x}, ${6:y}) if (${5:x} == ${6:y}) -> ${7:result2}",
+      "\t_ -> ${0:default}",
       "}"
     ],
     "description": "Match expression with tuple patterns"
@@ -176,7 +176,7 @@
   },
   "Map": {
     "prefix": ["map"],
-    "body": ["let ${1:map} = {\"${2:key}\" => ${0:value}}"],
+    "body": ["let ${1:map} = #{\"${2:key}\": ${0:value}}"],
     "description": "Map declaration"
   },
   "Set": {
@@ -359,8 +359,8 @@
     "prefix": ["resultmatch"],
     "body": [
       "match (${1:result}) {",
-      "\tOk(${2:value}) => ${3:handle_ok}",
-      "\tErr(${4:e}) => ${0:handle_err}",
+      "\tOk(${2:value}) -> ${3:handle_ok}",
+      "\tErr(${4:e}) -> ${0:handle_err}",
       "}"
     ],
     "description": "Match on Result<T, E>"
@@ -369,8 +369,8 @@
     "prefix": ["optionmatch"],
     "body": [
       "match (${1:opt}) {",
-      "\tSome(${2:value}) => ${3:handle_some}",
-      "\tNone => ${0:handle_none}",
+      "\tSome(${2:value}) -> ${3:handle_some}",
+      "\tNone -> ${0:handle_none}",
       "}"
     ],
     "description": "Match on Option<T>"
