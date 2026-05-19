@@ -14,6 +14,23 @@ import { resolveXrayPath } from './xrayPath';
 import { highlightXray } from './markdownHighlighter';
 
 // ---------------------------------------------------------------------------
+// Shell quoting
+// ---------------------------------------------------------------------------
+
+/**
+ * Quote a file path for safe use in a terminal command string.
+ *
+ * - Windows (CMD / PowerShell): wrap in double quotes, escape inner `"`.
+ * - POSIX: wrap in single quotes, escape inner `'` with `'\''`.
+ */
+function shellQuote(p: string): string {
+    if (process.platform === 'win32') {
+        return `"${p.replace(/"/g, '\\"')}"`;
+    }
+    return `'${p.replace(/'/g, "'\\''")}'`;
+}
+
+// ---------------------------------------------------------------------------
 // Module-level state
 // ---------------------------------------------------------------------------
 
@@ -106,6 +123,13 @@ export async function activate(context: vscode.ExtensionContext) {
                     'xray.analysis.typeChecking',
                     'xray.format.tabSize',
                     'xray.format.insertSpaces',
+                    'xray.format.alignMatchArms',
+                    'xray.format.alignEnumValues',
+                    'xray.format.alignStructFields',
+                    'xray.format.alignTrailingComments',
+                    'xray.format.maxLineLength',
+                    'xray.format.wrapLongLines',
+                    'xray.format.multilineTrailingComma',
                     'xray.inlayHints.typeAnnotations',
                     'xray.inlayHints.parameterNames'
                 ];
@@ -389,7 +413,14 @@ function buildInitializationOptions(cfg: vscode.WorkspaceConfiguration): Record<
             },
             format: {
                 tabSize: cfg.get<number>('format.tabSize', 4),
-                insertSpaces: cfg.get<boolean>('format.insertSpaces', true)
+                insertSpaces: cfg.get<boolean>('format.insertSpaces', true),
+                alignMatchArms: cfg.get<boolean>('format.alignMatchArms', false),
+                alignEnumValues: cfg.get<boolean>('format.alignEnumValues', false),
+                alignStructFields: cfg.get<boolean>('format.alignStructFields', false),
+                alignTrailingComments: cfg.get<boolean>('format.alignTrailingComments', false),
+                maxLineLength: cfg.get<number>('format.maxLineLength', 100),
+                wrapLongLines: cfg.get<boolean>('format.wrapLongLines', false),
+                multilineTrailingComma: cfg.get<boolean>('format.multilineTrailingComma', true)
             },
             inlayHints: {
                 typeAnnotations: cfg.get<boolean>('inlayHints.typeAnnotations', true),
@@ -496,7 +527,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
                 runTerminal = vscode.window.createTerminal({ name: 'Xray Run', cwd });
             }
             runTerminal.show();
-            runTerminal.sendText(`${resolved.path} run "${filePath}"`);
+            runTerminal.sendText(`${shellQuote(resolved.path)} run ${shellQuote(filePath)}`);
         }),
         vscode.commands.registerCommand('xray.collectDiagnostics', async () => {
             const doc = await buildDiagnosticDocument();

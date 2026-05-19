@@ -170,6 +170,43 @@
           "default": true,
           "description": "Use spaces (true) or tabs (false) for indentation."
         },
+        "xray.format.alignMatchArms": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Column-align the `->` of consecutive `match` arms. When off (default), each arm uses a single space before `->`, consistent with gofmt/prettier style. Turning this on improves readability for short patterns but produces noisier diffs when arms change length."
+        },
+        "xray.format.alignEnumValues": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Column-align the `=` of `enum` members so all values start at the same column."
+        },
+        "xray.format.alignStructFields": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Column-align the `:` of typed `class` / `struct` / `interface` fields, gofmt-style."
+        },
+        "xray.format.alignTrailingComments": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Column-align consecutive trailing line comments (`// ...`) so they all start at the same column. Same behavior as clang-format's default."
+        },
+        "xray.format.maxLineLength": {
+          "type": "number",
+          "default": 100,
+          "minimum": 40,
+          "maximum": 400,
+          "description": "Maximum line length hint used by the formatter when wrapping long literals/calls. Only takes effect when xray.format.wrapLongLines is enabled."
+        },
+        "xray.format.wrapLongLines": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "When a single-line literal (`{ ... }`, `[...]`, `foo(...)`, etc.) exceeds `xray.format.maxLineLength`, automatically wrap it onto multiple lines, prettier-style. Off by default to keep current output unchanged."
+        },
+        "xray.format.multilineTrailingComma": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "When a literal is wrapped to multi-line, append a trailing `,` after the last element (rustfmt/prettier convention). Has no effect on single-line output."
+        },
         "xray.inlayHints.typeAnnotations": {
           "type": "boolean",
           "default": true,
