@@ -46,7 +46,7 @@
   },
   "Channel": {
     "prefix": ["chan", "channel"],
-    "body": ["const ${1:ch} = new Channel(${2:10})"],
+    "body": ["shared const ${1:ch} = new Channel(${2:10})"],
     "description": "Create a channel"
   },
   "Channel Send/Recv": {
@@ -54,9 +54,19 @@
     "body": ["${1:ch}.send(${2:value})", "${1:ch}.recv()"],
     "description": "Channel send and receive"
   },
+  "Atomic": {
+    "prefix": ["atomic"],
+    "body": ["shared const ${1:counter} = Atomic(${2:0})"],
+    "description": "Create an atomic variable"
+  },
+  "Atomic CAS": {
+    "prefix": ["cas", "compareexchange"],
+    "body": ["let (${1:old}, ${2:ok}) = ${3:counter}.compareExchange(${4:expected}, ${5:desired})"],
+    "description": "Compare-and-exchange on atomic"
+  },
   "Select": {
     "prefix": ["select"],
-    "body": ["select {", "\t${1:msg} from ${2:ch} -> {", "\t\t$0", "\t}", "\tafter ${3:1000} -> {", "\t\tprint(\"timeout\")", "\t}", "}"],
+    "body": ["select {", "\t${1:msg} from ${2:ch} -> {", "\t\t$0", "\t}", "\tafter ${3:1000} -> {", "\t\tprint(\"timeout\")", "\t}", "\t_ -> {", "\t\tprint(\"idle\")", "\t}", "}"],
     "description": "Select statement"
   },
   "Shared Const": {
@@ -113,7 +123,7 @@
   "Tuple Multi-Return": {
     "prefix": ["fntuple", "fnmulti"],
     "body": [
-      "fn ${1:name}(${2:params}): (${3:int}, ${4:int}) {",
+      "fn ${1:name}(${2:params}) -> (${3:int}, ${4:int}) {",
       "\treturn (${5:0}, ${0:0})",
       "}"
     ],
@@ -137,7 +147,7 @@
   "Try-Force": {
     "prefix": ["try!", "tryforce"],
     "body": ["try! ${0:expr}"],
-    "description": "Force try — re-throws on error"
+    "description": "Force try — unwrap Result/nullable or return early on failure"
   },
   "Class": {
     "prefix": ["class"],
@@ -146,7 +156,7 @@
   },
   "Class Extends": {
     "prefix": ["classex", "classextends"],
-    "body": ["class ${1:Name} extends ${2:Base} {", "\tconstructor(${3:params}) {", "\t\tbase(${4:args})", "\t\t$0", "\t}", "}"],
+    "body": ["class ${1:Name} extends ${2:Base} {", "\tconstructor(${3:params}) {", "\t\tsuper(${4:args})", "\t\t$0", "\t}", "}"],
     "description": "Class with inheritance"
   },
   "Import": {
@@ -226,12 +236,12 @@
   },
   "JSON Parse": {
     "prefix": ["jsonparse"],
-    "body": ["let ${1:data} = json.parse(${0:str})"],
+    "body": ["let ${1:data} = Json.parse(${0:str})"],
     "description": "Parse JSON string"
   },
   "JSON Stringify": {
     "prefix": ["jsonstr", "stringify"],
-    "body": ["json.stringify(${0:obj})"],
+    "body": ["Json.stringify(${0:obj})"],
     "description": "Convert to JSON string"
   },
   "Await All": {
@@ -261,7 +271,7 @@
   },
   "Interface": {
     "prefix": ["interface", "iface"],
-    "body": ["interface ${1:Name} {", "\t${2:method}(${3:params}): ${0:type}", "}"],
+    "body": ["interface ${1:Name} {", "\t${2:method}(${3:params}) -> ${0:type}", "}"],
     "description": "Interface declaration"
   },
   "Test Function": {
@@ -311,13 +321,13 @@
   },
   "Template String": {
     "prefix": ["tpl", "template"],
-    "body": ["`${1:Hello, }${${2:name}}${3:!}`"],
-    "description": "Template string with interpolation"
+    "body": ["\"${1:Hello, }\\${${2:name}}${3:!}\""],
+    "description": "String interpolation"
   },
   "Format Log": {
     "prefix": ["log", "logf"],
-    "body": ["log.info(`${1:message} ${${2:value}}`)"],
-    "description": "Log info with template string"
+    "body": ["log.info(\"${1:message} \\${${2:value}}\")"],
+    "description": "Log info with string interpolation"
   },
   "Go With Return Channel": {
     "prefix": ["gochan"],
@@ -359,28 +369,28 @@
     "prefix": ["resultmatch"],
     "body": [
       "match (${1:result}) {",
-      "\tOk(${2:value}) -> ${3:handle_ok}",
-      "\tErr(${4:e}) -> ${0:handle_err}",
+      "\tResult.Ok(${2:value}) -> ${3:handle_ok}",
+      "\tResult.Err(${4:e}) -> ${0:handle_err}",
       "}"
     ],
     "description": "Match on Result<T, E>"
   },
-  "Option Match": {
-    "prefix": ["optionmatch"],
+  "Nullable Match": {
+    "prefix": ["nullablematch", "optionmatch"],
     "body": [
-      "match (${1:opt}) {",
-      "\tSome(${2:value}) -> ${3:handle_some}",
-      "\tNone -> ${0:handle_none}",
+      "match (${1:value}) {",
+      "\tnull -> ${2:handle_null}",
+      "\t_ -> ${0:handle_value}",
       "}"
     ],
-    "description": "Match on Option<T>"
+    "description": "Match on nullable value"
   },
   "Exception Class": {
     "prefix": ["exception"],
     "body": [
       "class ${1:MyError} extends Exception {",
       "\tconstructor(${2:message}: string) {",
-      "\t\tbase(${2:message})",
+      "\t\tsuper(${2:message})",
       "\t}",
       "}"
     ],
@@ -399,14 +409,14 @@
     ],
     "description": "Simple microbenchmark loop"
   },
-  "FS Read Text": {
+  "IO Read Text": {
     "prefix": ["fsread"],
-    "body": ["let ${1:text} = fs.read_to_string(${0:\"path\"})"],
+    "body": ["let ${1:text} = io.readFile(${0:\"path\"})"],
     "description": "Read entire file as string"
   },
-  "FS Write Text": {
+  "IO Write Text": {
     "prefix": ["fswrite"],
-    "body": ["fs.write(${1:\"path\"}, ${0:text})"],
+    "body": ["io.writeFile(${1:\"path\"}, ${0:text})"],
     "description": "Write string to file"
   },
   "Struct": {
@@ -416,12 +426,12 @@
   },
   "Function with in param": {
     "prefix": ["fnin"],
-    "body": ["fn ${1:name}(${2:v}: in ${3:StructType}): ${4:void} {", "\t$0", "}"],
+    "body": ["fn ${1:name}(${2:v}: in ${3:StructType}) -> ${4:()} {", "\t$0", "}"],
     "description": "Function with readonly struct reference parameter"
   },
   "Function with ref param": {
     "prefix": ["fnref"],
-    "body": ["fn ${1:name}(${2:v}: ref ${3:StructType}): ${4:void} {", "\t$0", "}"],
+    "body": ["fn ${1:name}(${2:v}: ref ${3:StructType}) -> ${4:()} {", "\t$0", "}"],
     "description": "Function with mutable struct reference parameter"
   },
   "For Range": {
@@ -431,7 +441,7 @@
   },
   "Operator Overload": {
     "prefix": ["operator", "opoverload"],
-    "body": ["operator ${1:+}(${2:other}: ${3:Self}): ${3:Self} {", "\t$0", "}"],
+    "body": ["operator ${1:+}(${2:other}: ${3:Self}) -> ${3:Self} {", "\t$0", "}"],
     "description": "Operator overload"
   },
   "Interface Implementation": {
@@ -446,22 +456,22 @@
   },
   "Generic Function": {
     "prefix": ["fng", "fngeneric"],
-    "body": ["fn ${1:identity}<${2:T}>(${3:x}: ${2:T}): ${2:T} {", "\t$0", "}"],
+    "body": ["fn ${1:identity}<${2:T}>(${3:x}: ${2:T}) -> ${2:T} {", "\t$0", "}"],
     "description": "Generic function"
   },
   "Generic Function with Constraint": {
     "prefix": ["fngc", "fngenericconstraint"],
-    "body": ["fn ${1:max}<${2:T}: ${3:Comparable}>(${4:a}: ${2:T}, ${5:b}: ${2:T}): ${2:T} {", "\t$0", "}"],
+    "body": ["fn ${1:max}<${2:T}: ${3:Comparable}>(${4:a}: ${2:T}, ${5:b}: ${2:T}) -> ${2:T} {", "\t$0", "}"],
     "description": "Generic function with single interface/class constraint"
   },
   "Generic Function with Multi Constraint": {
     "prefix": ["fngmc", "fngenericmulti"],
-    "body": ["fn ${1:process}<${2:T}: ${3:Comparable} & ${4:Hashable}>(${5:item}: ${2:T}): ${2:T} {", "\t$0", "\treturn ${5:item}", "}"],
+    "body": ["fn ${1:process}<${2:T}: ${3:Comparable} & ${4:Hashable}>(${5:item}: ${2:T}) -> ${2:T} {", "\t$0", "\treturn ${5:item}", "}"],
     "description": "Generic function with multiple constraints (T: A & B)"
   },
   "Generic Function with Class Bound": {
     "prefix": ["fngcb", "fngenericclassbound"],
-    "body": ["fn ${1:describe}<${2:T}: ${3:Animal}>(${4:a}: ${2:T}): ${5:string} {", "\t$0", "\treturn ${4:a}.${6:name}", "}"],
+    "body": ["fn ${1:describe}<${2:T}: ${3:Animal}>(${4:a}: ${2:T}) -> ${5:string} {", "\t$0", "\treturn ${4:a}.${6:name}", "}"],
     "description": "Generic function bounded by a class (T must be subclass of BaseClass)"
   },
   "Final Class": {
@@ -471,7 +481,7 @@
   },
   "Abstract Class": {
     "prefix": ["abstractclass"],
-    "body": ["abstract class ${1:Name} {", "\tabstract ${2:method}(${3:params}): ${4:type}", "\t$0", "}"],
+    "body": ["abstract class ${1:Name} {", "\tabstract ${2:method}(${3:params}) -> ${4:type}", "\t$0", "}"],
     "description": "Abstract class"
   },
   "Import From": {
@@ -483,10 +493,5 @@
     "prefix": ["rstr", "rawstring"],
     "body": ["r\"${0}\""],
     "description": "Raw string (no escape processing)"
-  },
-  "CoroPool": {
-    "prefix": ["coropool", "pool"],
-    "body": ["const ${1:pool} = new CoroPool(${2:4})", "for (let ${3:item} in ${4:items}) {", "\t${1:pool}.submit(fn() {", "\t\t$0", "\t})", "}", "${1:pool}.wait()"],
-    "description": "CoroPool parallel task execution"
   }
 }

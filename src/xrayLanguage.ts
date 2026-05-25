@@ -3,21 +3,26 @@
  * and literals.  Imported by the Markdown highlighter, inline-values provider,
  * and any other component that needs to classify identifiers.
  *
- * Keep in sync with `src/frontend/lexer/xlex.h` in the xray core repo.
+ * Keep in sync with core lexer keywords, contextual parser words, and
+ * analyzer-registered built-in symbols in the xray core repo.
  */
 
 // ---------------------------------------------------------------------------
-// Keywords — every reserved word recognised by the Xray lexer / parser.
+// Keywords — reserved words and parser-contextual words.
 // ---------------------------------------------------------------------------
 
 export const KEYWORDS = new Set([
     // Declarations
     'let', 'const', 'fn', 'class', 'struct', 'interface', 'enum', 'type',
+    // Primitive type keywords
+    'int', 'int8', 'int16', 'int32', 'int64',
+    'uint8', 'uint16', 'uint32', 'uint64',
+    'float', 'float32', 'float64', 'string', 'bool', 'unknown',
     // Control flow
-    'if', 'else', 'while', 'for', 'in', 'is', 'to', 'break', 'continue',
-    'return', 'yield', 'match', 'case', 'default',
+    'if', 'else', 'while', 'for', 'in', 'is', 'break', 'continue',
+    'return', 'yield', 'match',
     // Class / OOP
-    'extends', 'implements', 'constructor', 'this', 'base', 'super',
+    'extends', 'implements', 'constructor', 'this', 'super',
     'new', 'static', 'private', 'public', 'abstract', 'override', 'final',
     'operator',
     // Exception handling
@@ -25,10 +30,10 @@ export const KEYWORDS = new Set([
     // Module system
     'import', 'export', 'from', 'as',
     // Concurrency
-    'go', 'await', 'select', 'defer', 'scope', 'after',
-    'cancel', 'cancelled', 'shared',
+    'go', 'await', 'select', 'defer', 'scope', 'linked', 'supervisor', 'after',
+    'cancelled', 'shared',
     // Contextual
-    'ref', 'move',
+    'ref', 'move', 'to',
     // Literals that look like keywords
     'true', 'false', 'null',
 ]);
@@ -38,11 +43,11 @@ export const KEYWORDS = new Set([
 // ---------------------------------------------------------------------------
 
 export const BUILTIN_FUNCTIONS = new Set([
-    'print', 'println', 'printf', 'sprintf', 'dump',
-    'typeof', 'typename', 'nameof',
+    'print', 'dump', 'typeof',
     'assert', 'assert_eq', 'assert_ne', 'assert_true', 'assert_false',
-    'panic', 'copy', 'chr', 'ord', 'len', 'range',
-    'min', 'max', 'abs', 'hash',
+    'assert_throws',
+    'int', 'float', 'string', 'bool',
+    'copy', 'chr',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -56,9 +61,10 @@ export const LITERALS = new Set(['true', 'false', 'null']);
 // ---------------------------------------------------------------------------
 
 export const BUILTIN_TYPES = new Set([
-    'Array', 'Map', 'Set', 'Json', 'Bytes', 'Slice', 'Channel', 'BigInt',
-    'Range', 'StringBuilder', 'Exception', 'Error', 'Regex', 'DateTime',
-    'CoroPool', 'Coro', 'Task', 'Result', 'Option',
+    'Array', 'Map', 'Set', 'Json', 'Bytes', 'Channel', 'BigInt',
+    'Range', 'StringBuilder', 'Exception', 'Regex', 'DateTime',
+    'Logger', 'NetConn', 'NetListener', 'Task', 'WeakMap', 'WeakSet', 'Result',
+    'Atomic', 'Ordering',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -69,5 +75,5 @@ export const PRIMITIVE_TYPES = new Set([
     'int', 'int8', 'int16', 'int32', 'int64',
     'uint8', 'uint16', 'uint32', 'uint64',
     'float', 'float32', 'float64',
-    'string', 'bool', 'void', 'any', 'unknown', 'never',
+    'string', 'bool', 'unknown',
 ]);

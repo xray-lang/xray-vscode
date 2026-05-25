@@ -12,6 +12,7 @@ import {
 import { registerDebugProviders } from './debugAdapter';
 import { resolveXrayPath } from './xrayPath';
 import { highlightXray } from './markdownHighlighter';
+import { XrayFoldingRangeProvider } from './foldingProvider';
 
 // ---------------------------------------------------------------------------
 // Shell quoting
@@ -90,6 +91,14 @@ export async function activate(context: vscode.ExtensionContext) {
     // (e.g. host editors that don't support some debug APIs) cannot
     // prevent xray.runFile from being registered.
     registerCommands(context);
+
+    context.subscriptions.push(
+        vscode.languages.registerFoldingRangeProvider(
+            { language: 'xray', scheme: 'file' },
+            new XrayFoldingRangeProvider()
+        )
+    );
+
     try {
         debugOutputChannel = registerDebugProviders(context);
     } catch (err) {

@@ -46,8 +46,8 @@ function tokenize(code: string): Token[] {
             continue;
         }
 
-        // Strings / template literals
-        if (c === '"' || c === "'" || c === '`') {
+        // Strings
+        if (c === '"' || c === "'") {
             const quote = c;
             let j = i + 1;
             while (j < len && code[j] !== quote) {
@@ -59,8 +59,8 @@ function tokenize(code: string): Token[] {
             continue;
         }
 
-        // Raw strings: r"...", r'...', r`...`
-        if (c === 'r' && i + 1 < len && (code[i + 1] === '"' || code[i + 1] === "'" || code[i + 1] === '`')) {
+        // Raw strings: r"...", r'...'
+        if (c === 'r' && i + 1 < len && (code[i + 1] === '"' || code[i + 1] === "'")) {
             const quote = code[i + 1];
             let j = i + 2;
             while (j < len && code[j] !== quote) j++;

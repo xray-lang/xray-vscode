@@ -89,56 +89,6 @@
           ]
         },
         {
-          "name": "string.template.xray",
-          "begin": "`",
-          "end": "`",
-          "patterns": [
-            {
-              "name": "constant.character.escape.xray",
-              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
-            },
-            {
-              "name": "invalid.illegal.escape.xray",
-              "match": "\\\\."
-            },
-            {
-              "name": "meta.embedded.expression.xray",
-              "begin": "\\$\\{",
-              "end": "\\}",
-              "beginCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
-              },
-              "endCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.end.xray" }
-              },
-              "patterns": [
-                { "include": "$self" }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "string.raw.template.xray",
-          "begin": "r`",
-          "end": "`",
-          "patterns": [
-            {
-              "name": "meta.embedded.expression.xray",
-              "begin": "\\$\\{",
-              "end": "\\}",
-              "beginCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
-              },
-              "endCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.end.xray" }
-              },
-              "patterns": [
-                { "include": "$self" }
-              ]
-            }
-          ]
-        },
-        {
           "name": "string.raw.double.xray",
           "begin": "r\"",
           "end": "\""
@@ -201,7 +151,7 @@
         },
         {
           "name": "keyword.control.xray",
-          "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|case|default|yield)\\b"
+          "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|default|yield)\\b"
         },
         {
           "name": "keyword.declaration.let.xray",
@@ -229,7 +179,7 @@
         },
         {
           "name": "keyword.class.xray",
-          "match": "\\b(extends|implements|constructor|this|super|new|base)\\b"
+          "match": "\\b(extends|implements|constructor|this|super|new)\\b"
         },
         {
           "name": "keyword.exception.xray",
@@ -241,7 +191,7 @@
         },
         {
           "name": "keyword.concurrency.xray",
-          "match": "\\b(go|await|select|defer|scope|cancel|cancelled|after|ref|move)\\b"
+          "match": "\\b(go|await|select|defer|scope|linked|supervisor|cancelled|after|ref|move)\\b"
         },
         {
           "name": "keyword.other.xray",
@@ -342,7 +292,7 @@
         },
         {
           "comment": "Nullable type: int?, string?",
-          "match": "\\b(int|float|string|bool|void|any|[A-Z][a-zA-Z0-9_]*)(\\?)",
+          "match": "\\b(int|float|string|bool|unknown|[A-Z][a-zA-Z0-9_]*)(\\?)",
           "captures": {
             "1": { "name": "support.type.xray" },
             "2": { "name": "keyword.operator.nullable.xray" }
@@ -359,24 +309,24 @@
         },
         {
           "name": "support.type.primitive.xray",
-          "match": "\\b(int|int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|float32|float64|string|bool|void|any|unknown|never)\\b"
+          "match": "\\b(int|int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|float32|float64|string|bool|unknown)\\b"
         },
         {
           "name": "support.type.builtin.xray",
-          "match": "\\b(Array|Map|Set|Json|Bytes|Slice|Channel|BigInt|Range|StringBuilder|Exception|Error|Regex|DateTime|CoroPool|Coro|Task|Result|Option)\\b"
+          "match": "\\b(Array|Map|Set|Json|Bytes|Channel|BigInt|Range|StringBuilder|Exception|Regex|DateTime|Logger|NetConn|NetListener|Task|WeakMap|WeakSet|Result|Atomic|Ordering)\\b"
         }
       ]
     },
     "stdlib-module": {
       "patterns": [
         {
-          "comment": "Standard library module prefix, e.g. fs.read / json.parse / http.listen",
-          "match": "\\b(time|json|http|regex|log|math|os|fs|crypto|base64|datetime|path|string|io|csv|compress|encoding|gc|toml|url|xml|yaml|net|ws|cluster|hex|process|sync|coro|test)\\s*(?=\\.)",
+          "comment": "Standard library module prefix, e.g. io.readFile / http.listen",
+          "match": "\\b(base64|cluster|compress|crypto|csv|datetime|encoding|gc|http|io|log|math|net|os|path|regex|time|toml|url|ws|xml|yaml)\\s*(?=\\.)",
           "name": "support.module.xray"
         },
         {
-          "comment": "Global Coro object (xray coroutine inspection API)",
-          "match": "\\b(Coro)\\s*(?=\\.)",
+          "comment": "Global runtime objects",
+          "match": "\\b(Coro|CoroPool|Json|Reflect|Type)\\s*(?=\\.)",
           "name": "support.class.xray"
         }
       ]
@@ -438,7 +388,7 @@
         {
           "comment": "Built-in global functions",
           "name": "support.function.builtin.xray",
-          "match": "\\b(print|println|printf|sprintf|dump|typeof|typename|nameof|assert|assert_eq|assert_ne|assert_true|assert_false|panic|copy|chr|ord|len|range|min|max|abs|hash)\\s*(?=\\()"
+          "match": "\\b(print|dump|typeof|assert|assert_eq|assert_ne|assert_true|assert_false|assert_throws|int|float|string|bool|copy|chr)\\s*(?=\\()"
         },
         {
           "comment": "Coroutine / concurrency intrinsics used as call sites",
