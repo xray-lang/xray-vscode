@@ -81,22 +81,6 @@ jobs:
             echo "tag=$REF_TAG" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Auto bump patch version (dispatch only)
-        if: github.event_name == 'repository_dispatch'
-        env:
-          XRAY_TAG: ${{ github.event.client_payload.xray_tag }}
-        run: |
-          CURRENT=$(node -p "require('./package.json').version")
-          IFS='.' read -r major minor patch <<< "$CURRENT"
-          NEW_VERSION="${major}.${minor}.$((patch + 1))"
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${NEW_VERSION}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-          echo "Bumped version: $CURRENT -> $NEW_VERSION (xray $XRAY_TAG)"
-
       - name: Download xray binary for ${{ matrix.vsce_target }}
         env:
           GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
@@ -153,22 +137,6 @@ jobs:
           cache: npm
 
       - run: npm ci
-
-      - name: Auto bump patch version (dispatch only)
-        if: github.event_name == 'repository_dispatch'
-        env:
-          XRAY_TAG: ${{ github.event.client_payload.xray_tag }}
-        run: |
-          CURRENT=$(node -p "require('./package.json').version")
-          IFS='.' read -r major minor patch <<< "$CURRENT"
-          NEW_VERSION="${major}.${minor}.$((patch + 1))"
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${NEW_VERSION}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-          echo "Bumped version: $CURRENT -> $NEW_VERSION (xray $XRAY_TAG)"
 
       - name: Build and package universal
         run: |
@@ -237,26 +205,3 @@ jobs:
             echo "Publishing $vsix to Open VSX"
             npx ovsx publish "$vsix" -p "$OVSX_PAT"
           done
-
-      - name: Commit version bump
-        if: github.event_name == 'repository_dispatch'
-        env:
-          XRAY_TAG: ${{ github.event.client_payload.xray_tag }}
-        run: |
-          # Same bump logic as the package job — repo is freshly checked out
-          # so package.json still has the pre-bump version.
-          CURRENT=$(node -p "require('./package.json').version")
-          IFS='.' read -r major minor patch <<< "$CURRENT"
-          NEW_VERSION="${major}.${minor}.$((patch + 1))"
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${NEW_VERSION}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git diff --cached --quiet && echo "No version change to commit" && exit 0
-          git commit -m "v${NEW_VERSION}: update bundled xray to ${XRAY_TAG}"
-          git push
