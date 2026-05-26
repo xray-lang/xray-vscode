@@ -31,6 +31,7 @@ on:
       - 'v*'
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
@@ -184,14 +185,52 @@ jobs:
       - run: npm ci
 
       - name: Download all .vsix artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Flatten artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          mkdir -p dist
-          find artifacts -name '*.vsix' -exec mv {} dist/ \;
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+          import zipfile
+
+          token = os.environ["GH_TOKEN"]
+          repo = os.environ["REPO"]
+          run_id = os.environ["RUN_ID"]
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+
+          def request(url):
+              req = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(req) as resp:
+                  return resp.read()
+
+          artifacts = json.loads(request(
+              f"https://api.github.com/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100"
+          ))["artifacts"]
+          dist = pathlib.Path("dist")
+          dist.mkdir(exist_ok=True)
+          for artifact in artifacts:
+              if artifact.get("expired"):
+                  continue
+              archive = request(artifact["archive_download_url"])
+              archive_path = pathlib.Path(f'{artifact["name"]}.zip')
+              archive_path.write_bytes(archive)
+              with zipfile.ZipFile(archive_path) as zf:
+                  for member in zf.namelist():
+                      if member.endswith(".vsix"):
+                          target = dist / pathlib.Path(member).name
+                          target.write_bytes(zf.read(member))
+                          print(target)
+          if not list(dist.glob("*.vsix")):
+              raise SystemExit("no VSIX artifacts were downloaded")
+          PY
           ls -l dist/
 
       - name: Publish to VS Code Marketplace
