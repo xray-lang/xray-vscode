@@ -125,6 +125,9 @@ jobs:
               exit 1
           fi
           cp "$EXTRACTED" "bin/${{ matrix.bin_name }}"
+          if [[ "${{ matrix.vsce_target }}" == win32-* ]]; then
+              find "$(dirname "$EXTRACTED")" -maxdepth 1 -name '*.dll' -type f -exec cp {} bin/ \;
+          fi
           chmod +x "bin/${{ matrix.bin_name }}"
           ls -l bin/
 
