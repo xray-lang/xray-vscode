@@ -536,7 +536,8 @@ function registerCommands(context: vscode.ExtensionContext): void {
                 runTerminal = vscode.window.createTerminal({ name: 'Xray Run', cwd });
             }
             runTerminal.show();
-            runTerminal.sendText(`${shellQuote(resolved.path)} run ${shellQuote(filePath)}`);
+            const prefix = process.platform === 'win32' ? '& ' : '';
+            runTerminal.sendText(`${prefix}${shellQuote(resolved.path)} run ${shellQuote(filePath)}`);
         }),
         vscode.commands.registerCommand('xray.collectDiagnostics', async () => {
             const doc = await buildDiagnosticDocument();
