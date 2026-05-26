@@ -57,10 +57,12 @@ jobs:
             xray_asset: xray-windows-x64.zip
             bin_name: xray.exe
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ''
-          persist-credentials: false
+      - name: Checkout
+        run: |
+          git init .
+          git remote add origin https://github.com/xray-lang/xray-vscode.git
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
 
       - uses: actions/setup-node@v4
         with:
@@ -86,16 +88,15 @@ jobs:
 
       - name: Download xray binary for ${{ matrix.vsce_target }}
         env:
-          GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.resolve_tag.outputs.tag }}
           XRAY_ASSET: ${{ matrix.xray_asset }}
         run: |
           set -euo pipefail
           echo "Downloading $XRAY_ASSET from xray-lang/xray@$TAG"
-          gh release download "$TAG" \
-              --repo xray-lang/xray \
-              --pattern "$XRAY_ASSET" \
-              --dir /tmp/xray-release
+          mkdir -p /tmp/xray-release
+          curl -fsSL \
+              "https://github.com/xray-lang/xray/releases/download/$TAG/$XRAY_ASSET" \
+              -o "/tmp/xray-release/$XRAY_ASSET"
           mkdir -p bin
           case "$XRAY_ASSET" in
             *.tar.gz) tar -xzf "/tmp/xray-release/$XRAY_ASSET" -C /tmp/xray-release ;;
@@ -132,10 +133,12 @@ jobs:
     name: Package (universal)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ''
-          persist-credentials: false
+      - name: Checkout
+        run: |
+          git init .
+          git remote add origin https://github.com/xray-lang/xray-vscode.git
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
 
       - uses: actions/setup-node@v4
         with:
@@ -166,10 +169,12 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'repository_dispatch' || inputs.dry_run != 'true'
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ''
-          persist-credentials: false
+      - name: Checkout
+        run: |
+          git init .
+          git remote add origin https://github.com/xray-lang/xray-vscode.git
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
 
       - uses: actions/setup-node@v4
         with:
