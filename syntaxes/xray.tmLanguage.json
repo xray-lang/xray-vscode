@@ -183,7 +183,7 @@
         },
         {
           "name": "keyword.exception.xray",
-          "match": "\\b(try[?!]?|catch|finally|throw)\\b"
+          "match": "\\b(try[?!]?|catch|throw|panic)\\b"
         },
         {
           "name": "keyword.module.xray",

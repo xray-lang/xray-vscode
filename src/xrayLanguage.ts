@@ -25,8 +25,8 @@ export const KEYWORDS = new Set([
     'extends', 'implements', 'constructor', 'this', 'super',
     'new', 'static', 'private', 'public', 'abstract', 'override', 'final',
     'operator',
-    // Exception handling
-    'try', 'catch', 'finally', 'throw',
+    // Error handling
+    'try', 'catch', 'throw', 'panic',
     // Module system
     'import', 'export', 'from', 'as',
     // Concurrency
@@ -62,7 +62,7 @@ export const LITERALS = new Set(['true', 'false', 'null']);
 
 export const BUILTIN_TYPES = new Set([
     'Array', 'Map', 'Set', 'Json', 'Bytes', 'Channel', 'BigInt',
-    'Range', 'StringBuilder', 'Exception', 'Regex', 'DateTime',
+    'Range', 'StringBuilder', 'Regex', 'DateTime',
     'Logger', 'NetConn', 'NetListener', 'Task', 'WeakMap', 'WeakSet', 'Result',
     'Atomic', 'Ordering',
 ]);

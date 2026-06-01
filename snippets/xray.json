@@ -134,10 +134,10 @@
     "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "}"],
     "description": "Try-catch block"
   },
-  "Try-Catch-Finally": {
-    "prefix": ["tryf", "trycatchfinally"],
-    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "} finally {", "\t", "}"],
-    "description": "Try-catch-finally block"
+  "Try-Catch-Panic": {
+    "prefix": ["tryp", "trycatchpanic"],
+    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "} catch panic {", "\tprint(\"Runtime fault\")", "}"],
+    "description": "Try-catch with panic handler"
   },
   "Try-Optional": {
     "prefix": ["try?", "tryoptional"],
