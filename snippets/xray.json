@@ -46,12 +46,19 @@
   },
   "Channel": {
     "prefix": ["chan", "channel"],
-    "body": ["shared const ${1:ch} = new Channel(${2:10})"],
+    "body": ["shared const ${1:ch} = new Channel<${2:int}>(${3:10})"],
     "description": "Create a channel"
   },
   "Channel Send/Recv": {
     "prefix": ["chansend", "chanrecv"],
-    "body": ["${1:ch}.send(${2:value})", "${1:ch}.recv()"],
+    "body": [
+      "${1:ch}.send(${2:value})",
+      "match ${1:ch}.recv() {",
+      "\tRecv.Value(${3:value}) -> $0",
+      "\tRecv.Closed -> break",
+      "\t_ -> unreachable()",
+      "}"
+    ],
     "description": "Channel send and receive"
   },
   "Atomic": {
@@ -286,7 +293,7 @@
   },
   "Coro Monitor": {
     "prefix": ["coromonitor", "Coro.monitor"],
-    "body": ["let ${1:ch} = Coro.monitor(\"${2:name}\")", "let ${3:reason} = ${1:ch}.recv()", "print(\"exited: \" + ${3:reason})"],
+    "body": ["let ${1:ch} = Coro.monitor(\"${2:name}\")", "match ${1:ch}.recv() {", "\tRecv.Value(${3:reason}) -> print(\"exited: \" + ${3:reason})", "\tRecv.Closed -> print(\"monitor closed\")", "\t_ -> unreachable()", "}"],
     "description": "Monitor a named coroutine via Coro global object"
   },
   "StringBuilder": {
@@ -301,8 +308,8 @@
   },
   "Await Timeout": {
     "prefix": ["awaittimeout"],
-    "body": ["await(timeout: ${0:5000}) ${1:task}"],
-    "description": "Await with timeout (ms)"
+    "body": ["${1:task}.awaitTimeout(${2:5000})"],
+    "description": "Await with timeout result (ms)"
   },
   "Cluster Start": {
     "prefix": ["clusterstart", "cluster.start"],
@@ -332,12 +339,16 @@
   "Go With Return Channel": {
     "prefix": ["gochan"],
     "body": [
-      "const ${1:done} = new Channel<${2:int}>()",
+      "shared const ${1:done} = new Channel<${2:int}>()",
       "go fn() {",
       "\t$0",
       "\t${1:done}.send(${3:0})",
       "}()",
-      "let ${4:result} = ${1:done}.recv()"
+      "let ${4:result} = match ${1:done}.recv() {",
+      "\tRecv.Value(value) -> value",
+      "\tRecv.Closed -> ${5:0}",
+      "\t_ -> ${5:0}",
+      "}"
     ],
     "description": "Coroutine with channel-based completion signal"
   },
@@ -356,14 +367,15 @@
   "Await Timeout Guarded": {
     "prefix": ["awaitt"],
     "body": [
-      "try {",
-      "\tlet ${1:result} = await(timeout: ${3:5000}) ${2:task}",
-      "\t$0",
-      "} catch (e) {",
-      "\tprint(\"timeout: \" + e)",
+      "match ${1:task}.awaitTimeout(${2:5000}) {",
+      "\tTaskResult.Success(${3:value}) -> $0",
+      "\tTaskResult.Timeout -> print(\"timeout\")",
+      "\tTaskResult.Cancelled -> print(\"cancelled\")",
+      "\tTaskResult.Failed(${4:err}) -> print(${4:err})",
+      "\tTaskResult.Pending -> unreachable()",
       "}"
     ],
-    "description": "await with timeout and error handling"
+    "description": "await with timeout result handling"
   },
   "Result Match": {
     "prefix": ["resultmatch"],

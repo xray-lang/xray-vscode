@@ -313,7 +313,7 @@
         },
         {
           "name": "support.type.builtin.xray",
-          "match": "\\b(Array|Map|Set|Json|Bytes|Channel|BigInt|Range|StringBuilder|Exception|Regex|DateTime|Logger|NetConn|NetListener|Task|WeakMap|WeakSet|Result|Atomic|Ordering)\\b"
+          "match": "\\b(Array|Map|Set|Json|Bytes|Channel|BigInt|Range|StringBuilder|Exception|Regex|DateTime|Logger|NetConn|NetListener|Task|Recv|SendResult|TaskResult|TaskStatus|WeakMap|WeakSet|Result|Atomic|Ordering)\\b"
         }
       ]
     },

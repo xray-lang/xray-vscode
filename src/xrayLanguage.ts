@@ -64,7 +64,7 @@ export const BUILTIN_TYPES = new Set([
     'Array', 'Map', 'Set', 'Json', 'Bytes', 'Channel', 'BigInt',
     'Range', 'StringBuilder', 'Regex', 'DateTime',
     'Logger', 'NetConn', 'NetListener', 'Task', 'WeakMap', 'WeakSet', 'Result',
-    'Atomic', 'Ordering',
+    'Atomic', 'Ordering', 'Recv', 'SendResult', 'TaskResult', 'TaskStatus',
 ]);
 
 // ---------------------------------------------------------------------------
