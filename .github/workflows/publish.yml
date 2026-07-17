@@ -87,6 +87,12 @@ jobs:
             echo "tag=$REF_TAG" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Report package version
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "Extension version: $VERSION"
+          echo "Bundled xray release: ${{ steps.resolve_tag.outputs.tag }}"
+
       - name: Download xray binary for ${{ matrix.vsce_target }}
         env:
           TAG: ${{ steps.resolve_tag.outputs.tag }}
@@ -148,12 +154,18 @@ jobs:
 
       - run: npm ci
 
+      - name: Report package version
+        run: |
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "Extension version: $VERSION"
+
       - name: Build and package universal
         run: |
           npm run package-ext
           # Universal vsix: no bundled binary, no --target flag.
           # Users must set xray.lsp.path or install xray on PATH.
-          npx vsce package --no-dependencies -o "xray-lang-universal-$(node -p "require('./package.json').version").vsix"
+          VERSION=$(node -p 'require("./package.json").version')
+          npx vsce package --no-dependencies -o "xray-lang-universal-${VERSION}.vsix"
           ls -l *.vsix
 
       - name: Upload artifact

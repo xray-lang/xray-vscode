@@ -1,56 +1,131 @@
 {
   "Anonymous Function": {
-    "prefix": ["fn", "func", "function"],
-    "body": ["fn(${1:params}) {", "\t$0", "}"],
+    "prefix": [
+      "fn",
+      "func",
+      "function"
+    ],
+    "body": [
+      "fn(${1:params}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "Anonymous function"
   },
   "Named Function": {
-    "prefix": ["fnn", "function"],
-    "body": ["fn ${1:name}(${2:params}) {", "\t$0", "}"],
+    "prefix": [
+      "fnn",
+      "function"
+    ],
+    "body": [
+      "fn ${1:name}(${2:params}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "Named function"
   },
   "Arrow Function": {
-    "prefix": ["arrow", "->"],
-    "body": ["(${1:params}) -> ${0:expr}"],
+    "prefix": [
+      "arrow",
+      "->"
+    ],
+    "body": [
+      "(${1:params}) -> ${0:expr}"
+    ],
     "description": "Arrow function"
   },
   "Arrow Function Block": {
-    "prefix": ["arrowb"],
-    "body": ["(${1:params}) -> {", "\t$0", "}"],
+    "prefix": [
+      "arrowb"
+    ],
+    "body": [
+      "(${1:params}) -> {",
+      "\t$0",
+      "}"
+    ],
     "description": "Arrow function with block"
   },
   "Export Function": {
-    "prefix": ["export fn", "exportfn", "efn"],
-    "body": ["export fn ${1:name}(${2:params}) {", "\t$0", "}"],
+    "prefix": [
+      "export fn",
+      "exportfn",
+      "efn"
+    ],
+    "body": [
+      "export fn ${1:name}(${2:params}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "Export function"
   },
   "HTTP Route": {
-    "prefix": ["route", "http.route"],
-    "body": ["http.route(\"${1:GET}\", \"${2:/}\", fn(req) {", "\t$0", "\treturn \"OK\"", "})"],
+    "prefix": [
+      "route",
+      "http.route"
+    ],
+    "body": [
+      "http.route(\"${1:GET}\", \"${2:/}\", fn(req) {",
+      "\t$0",
+      "\treturn \"OK\"",
+      "})"
+    ],
     "description": "HTTP route handler"
   },
   "HTTP Server": {
-    "prefix": ["httpserver", "http.listen"],
-    "body": ["import http", "", "http.route(\"GET\", \"/\", fn(req) {", "\treturn \"Hello, World!\"", "})", "", "print(\"Server running on http://localhost:${1:8080}\")", "http.listen(${1:8080})"],
+    "prefix": [
+      "httpserver",
+      "http.listen"
+    ],
+    "body": [
+      "import http",
+      "",
+      "http.route(\"GET\", \"/\", fn(req) {",
+      "\treturn \"Hello, World!\"",
+      "})",
+      "",
+      "print(\"Server running on http://localhost:${1:8080}\")",
+      "http.listen(${1:8080})"
+    ],
     "description": "HTTP server template"
   },
   "Go Coroutine": {
-    "prefix": ["go"],
-    "body": ["go fn() {", "\t$0", "}()"],
+    "prefix": [
+      "go"
+    ],
+    "body": [
+      "go fn() {",
+      "\t$0",
+      "}()"
+    ],
     "description": "Go coroutine"
   },
   "Go Named Coroutine": {
-    "prefix": ["gon", "gonamed"],
-    "body": ["let ${1:task} = go fn() {", "\t$0", "}()"],
+    "prefix": [
+      "gon",
+      "gonamed"
+    ],
+    "body": [
+      "var ${1:task} = go fn() {",
+      "\t$0",
+      "}()"
+    ],
     "description": "Go coroutine with variable"
   },
   "Channel": {
-    "prefix": ["chan", "channel"],
-    "body": ["shared const ${1:ch} = new Channel<${2:int}>(${3:10})"],
+    "prefix": [
+      "chan",
+      "channel"
+    ],
+    "body": [
+      "shared ${1:ch} = Channel<${2:int}>(${3:10})"
+    ],
     "description": "Create a channel"
   },
   "Channel Send/Recv": {
-    "prefix": ["chansend", "chanrecv"],
+    "prefix": [
+      "chansend",
+      "chanrecv"
+    ],
     "body": [
       "${1:ch}.send(${2:value})",
       "match ${1:ch}.recv() {",
@@ -62,57 +137,129 @@
     "description": "Channel send and receive"
   },
   "Atomic": {
-    "prefix": ["atomic"],
-    "body": ["shared const ${1:counter} = Atomic(${2:0})"],
+    "prefix": [
+      "atomic"
+    ],
+    "body": [
+      "shared ${1:counter} = Atomic(${2:0})"
+    ],
     "description": "Create an atomic variable"
   },
   "Atomic CAS": {
-    "prefix": ["cas", "compareexchange"],
-    "body": ["let (${1:old}, ${2:ok}) = ${3:counter}.compareExchange(${4:expected}, ${5:desired})"],
+    "prefix": [
+      "cas",
+      "compareexchange"
+    ],
+    "body": [
+      "var (${1:old}, ${2:ok}) = ${3:counter}.compareExchange(${4:expected}, ${5:desired})"
+    ],
     "description": "Compare-and-exchange on atomic"
   },
   "Select": {
-    "prefix": ["select"],
-    "body": ["select {", "\t${1:msg} from ${2:ch} -> {", "\t\t$0", "\t}", "\tafter ${3:1000} -> {", "\t\tprint(\"timeout\")", "\t}", "\t_ -> {", "\t\tprint(\"idle\")", "\t}", "}"],
+    "prefix": [
+      "select"
+    ],
+    "body": [
+      "select {",
+      "\t${1:msg} from ${2:ch} -> {",
+      "\t\t$0",
+      "\t}",
+      "\tafter ${3:1000} -> {",
+      "\t\tprint(\"timeout\")",
+      "\t}",
+      "\t_ -> {",
+      "\t\tprint(\"idle\")",
+      "\t}",
+      "}"
+    ],
     "description": "Select statement"
   },
   "Shared Const": {
-    "prefix": ["shared", "sharedconst"],
-    "body": ["shared const ${1:name} = ${0:value}"],
+    "prefix": [
+      "shared",
+      "sharedconst"
+    ],
+    "body": [
+      "shared ${1:name} = ${0:value}"
+    ],
     "description": "Shared constant"
   },
   "For Loop": {
-    "prefix": ["for", "forin"],
-    "body": ["for (${1:item} in ${2:items}) {", "\t$0", "}"],
+    "prefix": [
+      "for",
+      "forin"
+    ],
+    "body": [
+      "for (${1:item} in ${2:items}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "For-in loop"
   },
   "For C-style": {
-    "prefix": ["forc", "fori"],
-    "body": ["for (let ${1:i} = 0; ${1:i} < ${2:n}; ${1:i}++) {", "\t$0", "}"],
+    "prefix": [
+      "forc",
+      "fori"
+    ],
+    "body": [
+      "for (var ${1:i} = 0; ${1:i} < ${2:n}; ${1:i}++) {",
+      "\t$0",
+      "}"
+    ],
     "description": "C-style for loop"
   },
   "While Loop": {
-    "prefix": ["while"],
-    "body": ["while (${1:condition}) {", "\t$0", "}"],
+    "prefix": [
+      "while"
+    ],
+    "body": [
+      "while (${1:condition}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "While loop"
   },
   "If Statement": {
-    "prefix": ["if"],
-    "body": ["if (${1:condition}) {", "\t$0", "}"],
+    "prefix": [
+      "if"
+    ],
+    "body": [
+      "if (${1:condition}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "If statement"
   },
   "If-Else Statement": {
-    "prefix": ["ife", "ifelse"],
-    "body": ["if (${1:condition}) {", "\t$0", "} else {", "\t", "}"],
+    "prefix": [
+      "ife",
+      "ifelse"
+    ],
+    "body": [
+      "if (${1:condition}) {",
+      "\t$0",
+      "} else {",
+      "\t",
+      "}"
+    ],
     "description": "If-else statement"
   },
   "Match Expression": {
-    "prefix": ["match"],
-    "body": ["match (${1:value}) {", "\t${2:pattern} -> ${3:result}", "\t_ -> ${0:default}", "}"],
+    "prefix": [
+      "match"
+    ],
+    "body": [
+      "match (${1:value}) {",
+      "\t${2:pattern} -> ${3:result}",
+      "\t_ -> ${0:default}",
+      "}"
+    ],
     "description": "Match expression"
   },
   "Match Tuple Pattern": {
-    "prefix": ["matchtuple"],
+    "prefix": [
+      "matchtuple"
+    ],
     "body": [
       "match (${1:tuple}) {",
       "\t(${2:0}, ${3:_}) -> ${4:result1}",
@@ -123,12 +270,20 @@
     "description": "Match expression with tuple patterns"
   },
   "Tuple Destructure": {
-    "prefix": ["lett", "lettuple"],
-    "body": ["let (${1:a}, ${2:b}) = ${0:expr}"],
-    "description": "Tuple destructuring let"
+    "prefix": [
+      "vart",
+      "vartuple"
+    ],
+    "body": [
+      "var (${1:a}, ${2:b}) = ${0:expr}"
+    ],
+    "description": "Tuple destructuring var"
   },
   "Tuple Multi-Return": {
-    "prefix": ["fntuple", "fnmulti"],
+    "prefix": [
+      "fntuple",
+      "fnmulti"
+    ],
     "body": [
       "fn ${1:name}(${2:params}) -> (${3:int}, ${4:int}) {",
       "\treturn (${5:0}, ${0:0})",
@@ -137,214 +292,435 @@
     "description": "Function returning a tuple"
   },
   "Try-Catch": {
-    "prefix": ["try", "trycatch"],
-    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "}"],
+    "prefix": [
+      "try",
+      "trycatch"
+    ],
+    "body": [
+      "try {",
+      "\t$0",
+      "} catch (${1:e}) {",
+      "\tprint(\"Error: \" + ${1:e})",
+      "}"
+    ],
     "description": "Try-catch block"
   },
   "Try-Catch-Panic": {
-    "prefix": ["tryp", "trycatchpanic"],
-    "body": ["try {", "\t$0", "} catch (${1:e}) {", "\tprint(\"Error: \" + ${1:e})", "} catch panic {", "\tprint(\"Runtime fault\")", "}"],
+    "prefix": [
+      "tryp",
+      "trycatchpanic"
+    ],
+    "body": [
+      "try {",
+      "\t$0",
+      "} catch (${1:e}) {",
+      "\tprint(\"Error: \" + ${1:e})",
+      "} catch panic {",
+      "\tprint(\"Runtime fault\")",
+      "}"
+    ],
     "description": "Try-catch with panic handler"
   },
-  "Try-Optional": {
-    "prefix": ["try?", "tryoptional"],
-    "body": ["try? ${0:expr}"],
-    "description": "Optional try — returns null on error"
-  },
-  "Try-Force": {
-    "prefix": ["try!", "tryforce"],
-    "body": ["try! ${0:expr}"],
-    "description": "Force try — unwrap Result/nullable or return early on failure"
-  },
   "Class": {
-    "prefix": ["class"],
-    "body": ["class ${1:Name} {", "\t${2:field}: ${3:type}", "\t", "\tconstructor(${4:params}) {", "\t\tthis.${2:field} = ${4:params}", "\t}", "\t", "\t${5:method}() {", "\t\t$0", "\t}", "}"],
+    "prefix": [
+      "class"
+    ],
+    "body": [
+      "class ${1:Name} {",
+      "\t${2:field}: ${3:type}",
+      "\t",
+      "\tconstructor(${4:params}) {",
+      "\t\tthis.${2:field} = ${4:params}",
+      "\t}",
+      "\t",
+      "\t${5:method}() {",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
     "description": "Class definition"
   },
   "Class Extends": {
-    "prefix": ["classex", "classextends"],
-    "body": ["class ${1:Name} extends ${2:Base} {", "\tconstructor(${3:params}) {", "\t\tsuper(${4:args})", "\t\t$0", "\t}", "}"],
+    "prefix": [
+      "classex",
+      "classextends"
+    ],
+    "body": [
+      "class ${1:Name} extends ${2:Base} {",
+      "\tconstructor(${3:params}) {",
+      "\t\tsuper(${4:args})",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
     "description": "Class with inheritance"
   },
   "Import": {
-    "prefix": ["import", "imp"],
-    "body": ["import ${1:module}"],
+    "prefix": [
+      "import",
+      "imp"
+    ],
+    "body": [
+      "import ${1:module}"
+    ],
     "description": "Import statement"
   },
   "Export Const": {
-    "prefix": ["exportconst", "econst"],
-    "body": ["export const ${1:NAME} = ${0:value}"],
+    "prefix": [
+      "exportconst",
+      "econst"
+    ],
+    "body": [
+      "export const ${1:NAME} = ${0:value}"
+    ],
     "description": "Export constant"
   },
-  "Let Variable": {
-    "prefix": ["let"],
-    "body": ["let ${1:name} = ${0:value}"],
-    "description": "Let variable"
+  "Var Variable": {
+    "prefix": [
+      "var"
+    ],
+    "body": [
+      "var ${1:name} = ${0:value}"
+    ],
+    "description": "Var variable"
   },
   "Const Variable": {
-    "prefix": ["const"],
-    "body": ["const ${1:name} = ${0:value}"],
+    "prefix": [
+      "const"
+    ],
+    "body": [
+      "const ${1:name} = ${0:value}"
+    ],
     "description": "Const variable"
   },
   "Array": {
-    "prefix": ["arr", "array"],
-    "body": ["let ${1:arr} = [${0}]"],
+    "prefix": [
+      "arr",
+      "array"
+    ],
+    "body": [
+      "var ${1:arr} = [${0}]"
+    ],
     "description": "Array declaration"
   },
   "Map": {
-    "prefix": ["map"],
-    "body": ["let ${1:map} = #{\"${2:key}\": ${0:value}}"],
+    "prefix": [
+      "map"
+    ],
+    "body": [
+      "var ${1:map} = #{\"${2:key}\": ${0:value}}"
+    ],
     "description": "Map declaration"
   },
   "Set": {
-    "prefix": ["set"],
-    "body": ["let ${1:set} = #[${0}]"],
+    "prefix": [
+      "set"
+    ],
+    "body": [
+      "var ${1:set} = #[${0}]"
+    ],
     "description": "Set declaration"
   },
   "Json Object": {
-    "prefix": ["json", "obj"],
-    "body": ["let ${1:obj} = {", "\t${2:key}: ${0:value}", "}"],
+    "prefix": [
+      "json",
+      "obj"
+    ],
+    "body": [
+      "var ${1:obj} = {",
+      "\t${2:key}: ${0:value}",
+      "}"
+    ],
     "description": "Json object"
   },
   "Print": {
-    "prefix": ["print", "pr"],
-    "body": ["print(${0})"],
+    "prefix": [
+      "print",
+      "pr"
+    ],
+    "body": [
+      "print(${0})"
+    ],
     "description": "Print statement"
   },
   "Print String": {
-    "prefix": ["prints", "prs"],
-    "body": ["print(\"${0}\")"],
+    "prefix": [
+      "prints",
+      "prs"
+    ],
+    "body": [
+      "print(\"${0}\")"
+    ],
     "description": "Print string"
   },
   "Assert": {
-    "prefix": ["assert"],
-    "body": ["assert(${0:condition})"],
+    "prefix": [
+      "assert"
+    ],
+    "body": [
+      "assert(${0:condition})"
+    ],
     "description": "Assert statement"
   },
   "Assert Equal": {
-    "prefix": ["asserteq", "aeq"],
-    "body": ["assert_eq(${1:actual}, ${0:expected})"],
+    "prefix": [
+      "asserteq",
+      "aeq"
+    ],
+    "body": [
+      "assert_eq(${1:actual}, ${0:expected})"
+    ],
     "description": "Assert equal"
   },
   "Defer": {
-    "prefix": ["defer"],
-    "body": ["defer ${0:cleanup()}"],
+    "prefix": [
+      "defer"
+    ],
+    "body": [
+      "defer ${0:cleanup()}"
+    ],
     "description": "Defer statement"
   },
   "Main Template": {
-    "prefix": ["main", "xrmain"],
-    "body": ["// ${1:Description}", "", "fn main() {", "\t$0", "}", "", "main()"],
+    "prefix": [
+      "main",
+      "xrmain"
+    ],
+    "body": [
+      "// ${1:Description}",
+      "",
+      "fn main() {",
+      "\t$0",
+      "}",
+      "",
+      "main()"
+    ],
     "description": "Main function template"
   },
   "Time Sleep": {
-    "prefix": ["sleep", "time.sleep"],
-    "body": ["time.sleep(${0:1000})"],
+    "prefix": [
+      "sleep",
+      "time.sleep"
+    ],
+    "body": [
+      "time.sleep(${0:1000})"
+    ],
     "description": "Sleep for milliseconds"
   },
   "JSON Parse": {
-    "prefix": ["jsonparse"],
-    "body": ["let ${1:data} = Json.parse(${0:str})"],
+    "prefix": [
+      "jsonparse"
+    ],
+    "body": [
+      "var ${1:data} = Json.parse(${0:str})"
+    ],
     "description": "Parse JSON string"
   },
   "JSON Stringify": {
-    "prefix": ["jsonstr", "stringify"],
-    "body": ["Json.stringify(${0:obj})"],
+    "prefix": [
+      "jsonstr",
+      "stringify"
+    ],
+    "body": [
+      "Json.stringify(${0:obj})"
+    ],
     "description": "Convert to JSON string"
   },
   "Await All": {
-    "prefix": ["awaitall"],
-    "body": ["await all [${0:tasks}]"],
+    "prefix": [
+      "awaitall"
+    ],
+    "body": [
+      "await all [${0:tasks}]"
+    ],
     "description": "Await all tasks"
   },
   "Await Any": {
-    "prefix": ["awaitany"],
-    "body": ["await any [${0:tasks}]"],
+    "prefix": [
+      "awaitany"
+    ],
+    "body": [
+      "await any [${0:tasks}]"
+    ],
     "description": "Await any task"
   },
   "Type Alias": {
-    "prefix": ["type", "typealias"],
-    "body": ["type ${1:Name} = ${0:type}"],
+    "prefix": [
+      "type",
+      "typealias"
+    ],
+    "body": [
+      "type ${1:Name} = ${0:type}"
+    ],
     "description": "Type alias declaration"
   },
   "Export Type Alias": {
-    "prefix": ["exporttype", "etype"],
-    "body": ["export type ${1:Name} = ${0:type}"],
+    "prefix": [
+      "exporttype",
+      "etype"
+    ],
+    "body": [
+      "export type ${1:Name} = ${0:type}"
+    ],
     "description": "Export type alias"
   },
   "Enum": {
-    "prefix": ["enum"],
-    "body": ["enum ${1:Name} {", "\t${2:VALUE1},", "\t${3:VALUE2},", "\t$0", "}"],
+    "prefix": [
+      "enum"
+    ],
+    "body": [
+      "enum ${1:Name} {",
+      "\t${2:VALUE1},",
+      "\t${3:VALUE2},",
+      "\t$0",
+      "}"
+    ],
     "description": "Enum declaration"
   },
   "Interface": {
-    "prefix": ["interface", "iface"],
-    "body": ["interface ${1:Name} {", "\t${2:method}(${3:params}) -> ${0:type}", "}"],
+    "prefix": [
+      "interface",
+      "iface"
+    ],
+    "body": [
+      "interface ${1:Name} {",
+      "\t${2:method}(${3:params}) -> ${0:type}",
+      "}"
+    ],
     "description": "Interface declaration"
   },
   "Test Function": {
-    "prefix": ["test", "@test"],
-    "body": ["@test", "fn ${1:test_name}() {", "\t$0", "}"],
+    "prefix": [
+      "test",
+      "@test"
+    ],
+    "body": [
+      "@test",
+      "fn ${1:test_name}() {",
+      "\t$0",
+      "}"
+    ],
     "description": "Test function with @test annotation"
   },
   "Scope Block": {
-    "prefix": ["scope"],
-    "body": ["scope {", "\tgo ${1:task1}()", "\tgo ${2:task2}()", "\t$0", "}"],
+    "prefix": [
+      "scope"
+    ],
+    "body": [
+      "scope {",
+      "\tgo ${1:task1}()",
+      "\tgo ${2:task2}()",
+      "\t$0",
+      "}"
+    ],
     "description": "Structured concurrency scope block"
   },
   "Coro Monitor": {
-    "prefix": ["coromonitor", "Coro.monitor"],
-    "body": ["let ${1:ch} = Coro.monitor(\"${2:name}\")", "match ${1:ch}.recv() {", "\tRecv.Value(${3:reason}) -> print(\"exited: \" + ${3:reason})", "\tRecv.Closed -> print(\"monitor closed\")", "\t_ -> unreachable()", "}"],
+    "prefix": [
+      "coromonitor",
+      "Coro.monitor"
+    ],
+    "body": [
+      "var ${1:ch} = Coro.monitor(\"${2:name}\")",
+      "match ${1:ch}.recv() {",
+      "\tRecv.Value(${3:reason}) -> print(\"exited: \" + ${3:reason})",
+      "\tRecv.Closed -> print(\"monitor closed\")",
+      "\t_ -> unreachable()",
+      "}"
+    ],
     "description": "Monitor a named coroutine via Coro global object"
   },
   "StringBuilder": {
-    "prefix": ["sb", "stringbuilder"],
-    "body": ["let ${1:sb} = new StringBuilder()", "${1:sb}.append(${2:\"hello\"}).append(${3:\" world\"})", "let ${4:result} = ${1:sb}.toString()"],
+    "prefix": [
+      "sb",
+      "stringbuilder"
+    ],
+    "body": [
+      "var ${1:sb} = StringBuilder()",
+      "${1:sb}.append(${2:\"hello\"}).append(${3:\" world\"})",
+      "var ${4:result} = ${1:sb}.toString()"
+    ],
     "description": "StringBuilder usage"
   },
-  "Bytes": {
-    "prefix": ["bytes"],
-    "body": ["let ${1:buf} = new Bytes(${2:1024})"],
-    "description": "Create byte buffer"
-  },
   "Await Timeout": {
-    "prefix": ["awaittimeout"],
-    "body": ["${1:task}.awaitTimeout(${2:5000})"],
+    "prefix": [
+      "awaittimeout"
+    ],
+    "body": [
+      "${1:task}.awaitTimeout(${2:5000})"
+    ],
     "description": "Await with timeout result (ms)"
   },
   "Cluster Start": {
-    "prefix": ["clusterstart", "cluster.start"],
-    "body": ["import cluster", "", "cluster.start({", "\tname: \"${1:node1}\",", "\tport: ${2:9000}", "})", "$0"],
+    "prefix": [
+      "clusterstart",
+      "cluster.start"
+    ],
+    "body": [
+      "import cluster",
+      "",
+      "cluster.start({",
+      "\tname: \"${1:node1}\",",
+      "\tport: ${2:9000}",
+      "})",
+      "$0"
+    ],
     "description": "Start a cluster node"
   },
   "Go Named Task": {
-    "prefix": ["gotask", "goname"],
-    "body": ["let ${1:task} = go(name: \"${2:worker}\") ${3:process}(${4:data})"],
+    "prefix": [
+      "gotask",
+      "goname"
+    ],
+    "body": [
+      "var ${1:task} = go(name: \"${2:worker}\") ${3:process}(${4:data})"
+    ],
     "description": "Launch named coroutine"
   },
   "Regex Pattern": {
-    "prefix": ["regex", "re"],
-    "body": ["let ${1:re} = /${2:pattern}/", "if (${1:re}.test(${3:text})) {", "\t$0", "}"],
+    "prefix": [
+      "regex",
+      "re"
+    ],
+    "body": [
+      "var ${1:re} = /${2:pattern}/",
+      "if (${1:re}.test(${3:text})) {",
+      "\t$0",
+      "}"
+    ],
     "description": "Regex pattern matching"
   },
   "Template String": {
-    "prefix": ["tpl", "template"],
-    "body": ["\"${1:Hello, }\\${${2:name}}${3:!}\""],
+    "prefix": [
+      "tpl",
+      "template"
+    ],
+    "body": [
+      "\"${1:Hello, }\\${${2:name}}${3:!}\""
+    ],
     "description": "String interpolation"
   },
   "Format Log": {
-    "prefix": ["log", "logf"],
-    "body": ["log.info(\"${1:message} \\${${2:value}}\")"],
+    "prefix": [
+      "log",
+      "logf"
+    ],
+    "body": [
+      "log.info(\"${1:message} \\${${2:value}}\")"
+    ],
     "description": "Log info with string interpolation"
   },
   "Go With Return Channel": {
-    "prefix": ["gochan"],
+    "prefix": [
+      "gochan"
+    ],
     "body": [
-      "shared const ${1:done} = new Channel<${2:int}>()",
+      "shared ${1:done} = Channel<${2:int}>()",
       "go fn() {",
       "\t$0",
       "\t${1:done}.send(${3:0})",
       "}()",
-      "let ${4:result} = match ${1:done}.recv() {",
+      "var ${4:result} = match ${1:done}.recv() {",
       "\tRecv.Value(value) -> value",
       "\tRecv.Closed -> ${5:0}",
       "\t_ -> ${5:0}",
@@ -353,7 +729,9 @@
     "description": "Coroutine with channel-based completion signal"
   },
   "Scope Concurrency": {
-    "prefix": ["scopeall"],
+    "prefix": [
+      "scopeall"
+    ],
     "body": [
       "scope {",
       "\tgo fn() { $1 }()",
@@ -365,7 +743,9 @@
     "description": "Structured concurrency scope that waits for all children"
   },
   "Await Timeout Guarded": {
-    "prefix": ["awaitt"],
+    "prefix": [
+      "awaitt"
+    ],
     "body": [
       "match ${1:task}.awaitTimeout(${2:5000}) {",
       "\tTaskResult.Success(${3:value}) -> $0",
@@ -378,7 +758,9 @@
     "description": "await with timeout result handling"
   },
   "Result Match": {
-    "prefix": ["resultmatch"],
+    "prefix": [
+      "resultmatch"
+    ],
     "body": [
       "match (${1:result}) {",
       "\tResult.Ok(${2:value}) -> ${3:handle_ok}",
@@ -388,7 +770,10 @@
     "description": "Match on Result<T, E>"
   },
   "Nullable Match": {
-    "prefix": ["nullablematch", "optionmatch"],
+    "prefix": [
+      "nullablematch",
+      "optionmatch"
+    ],
     "body": [
       "match (${1:value}) {",
       "\tnull -> ${2:handle_null}",
@@ -397,23 +782,14 @@
     ],
     "description": "Match on nullable value"
   },
-  "Exception Class": {
-    "prefix": ["exception"],
-    "body": [
-      "class ${1:MyError} extends Exception {",
-      "\tconstructor(${2:message}: string) {",
-      "\t\tsuper(${2:message})",
-      "\t}",
-      "}"
-    ],
-    "description": "Custom exception class"
-  },
   "Benchmark": {
-    "prefix": ["bench"],
+    "prefix": [
+      "bench"
+    ],
     "body": [
       "fn ${1:bench_name}() {",
-      "\tlet start = time.monotonic()",
-      "\tfor (let i = 0; i < ${2:1000000}; i++) {",
+      "\tvar start = time.monotonic()",
+      "\tfor (var i = 0; i < ${2:1000000}; i++) {",
       "\t\t$0",
       "\t}",
       "\tprint(\"${1:bench_name}: \" + (time.monotonic() - start) + \"ms\")",
@@ -422,88 +798,192 @@
     "description": "Simple microbenchmark loop"
   },
   "IO Read Text": {
-    "prefix": ["fsread"],
-    "body": ["let ${1:text} = io.readFile(${0:\"path\"})"],
+    "prefix": [
+      "fsread"
+    ],
+    "body": [
+      "var ${1:text} = io.readFile(${0:\"path\"})"
+    ],
     "description": "Read entire file as string"
   },
   "IO Write Text": {
-    "prefix": ["fswrite"],
-    "body": ["io.writeFile(${1:\"path\"}, ${0:text})"],
+    "prefix": [
+      "fswrite"
+    ],
+    "body": [
+      "io.writeFile(${1:\"path\"}, ${0:text})"
+    ],
     "description": "Write string to file"
   },
   "Struct": {
-    "prefix": ["struct"],
-    "body": ["struct ${1:Name} {", "\t${2:field}: ${3:type}", "}"],
+    "prefix": [
+      "struct"
+    ],
+    "body": [
+      "struct ${1:Name} {",
+      "\t${2:field}: ${3:type}",
+      "}"
+    ],
     "description": "Struct definition"
   },
   "Function with in param": {
-    "prefix": ["fnin"],
-    "body": ["fn ${1:name}(${2:v}: in ${3:StructType}) -> ${4:()} {", "\t$0", "}"],
+    "prefix": [
+      "fnin"
+    ],
+    "body": [
+      "fn ${1:name}(${2:v}: in ${3:StructType}) -> ${4:()} {",
+      "\t$0",
+      "}"
+    ],
     "description": "Function with readonly struct reference parameter"
   },
   "Function with ref param": {
-    "prefix": ["fnref"],
-    "body": ["fn ${1:name}(${2:v}: ref ${3:StructType}) -> ${4:()} {", "\t$0", "}"],
+    "prefix": [
+      "fnref"
+    ],
+    "body": [
+      "fn ${1:name}(${2:v}: ref ${3:StructType}) -> ${4:()} {",
+      "\t$0",
+      "}"
+    ],
     "description": "Function with mutable struct reference parameter"
   },
   "For Range": {
-    "prefix": ["forto", "forrange"],
-    "body": ["for (let ${1:i} = ${2:0} to ${3:10}) {", "\t$0", "}"],
+    "prefix": [
+      "forto",
+      "forrange"
+    ],
+    "body": [
+      "for (var ${1:i} = ${2:0} to ${3:10}) {",
+      "\t$0",
+      "}"
+    ],
     "description": "For-to range loop"
   },
   "Operator Overload": {
-    "prefix": ["operator", "opoverload"],
-    "body": ["operator ${1:+}(${2:other}: ${3:Self}) -> ${3:Self} {", "\t$0", "}"],
+    "prefix": [
+      "operator",
+      "opoverload"
+    ],
+    "body": [
+      "operator ${1:+}(${2:other}: ${3:Self}) -> ${3:Self} {",
+      "\t$0",
+      "}"
+    ],
     "description": "Operator overload"
   },
   "Interface Implementation": {
-    "prefix": ["impl", "classimpl"],
-    "body": ["class ${1:Name} implements ${2:Interface} {", "\t${3:method}(${4:params}) {", "\t\t$0", "\t}", "}"],
+    "prefix": [
+      "impl",
+      "classimpl"
+    ],
+    "body": [
+      "class ${1:Name} implements ${2:Interface} {",
+      "\t${3:method}(${4:params}) {",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
     "description": "Class implementing interface"
   },
   "Generic Class": {
-    "prefix": ["classg", "classgeneric"],
-    "body": ["class ${1:Box}<${2:T}> {", "\tvalue: ${2:T}", "\t", "\tconstructor(value: ${2:T}) {", "\t\tthis.value = value", "\t}", "\t$0", "}"],
+    "prefix": [
+      "classg",
+      "classgeneric"
+    ],
+    "body": [
+      "class ${1:Box}<${2:T}> {",
+      "\tvalue: ${2:T}",
+      "\t",
+      "\tconstructor(value: ${2:T}) {",
+      "\t\tthis.value = value",
+      "\t}",
+      "\t$0",
+      "}"
+    ],
     "description": "Generic class"
   },
   "Generic Function": {
-    "prefix": ["fng", "fngeneric"],
-    "body": ["fn ${1:identity}<${2:T}>(${3:x}: ${2:T}) -> ${2:T} {", "\t$0", "}"],
+    "prefix": [
+      "fng",
+      "fngeneric"
+    ],
+    "body": [
+      "fn ${1:identity}<${2:T}>(${3:x}: ${2:T}) -> ${2:T} {",
+      "\t$0",
+      "}"
+    ],
     "description": "Generic function"
   },
   "Generic Function with Constraint": {
-    "prefix": ["fngc", "fngenericconstraint"],
-    "body": ["fn ${1:max}<${2:T}: ${3:Comparable}>(${4:a}: ${2:T}, ${5:b}: ${2:T}) -> ${2:T} {", "\t$0", "}"],
+    "prefix": [
+      "fngc",
+      "fngenericconstraint"
+    ],
+    "body": [
+      "fn ${1:max}<${2:T}: ${3:Comparable}>(${4:a}: ${2:T}, ${5:b}: ${2:T}) -> ${2:T} {",
+      "\t$0",
+      "}"
+    ],
     "description": "Generic function with single interface/class constraint"
   },
   "Generic Function with Multi Constraint": {
-    "prefix": ["fngmc", "fngenericmulti"],
-    "body": ["fn ${1:process}<${2:T}: ${3:Comparable} & ${4:Hashable}>(${5:item}: ${2:T}) -> ${2:T} {", "\t$0", "\treturn ${5:item}", "}"],
+    "prefix": [
+      "fngmc",
+      "fngenericmulti"
+    ],
+    "body": [
+      "fn ${1:process}<${2:T}: ${3:Comparable} & ${4:Hashable}>(${5:item}: ${2:T}) -> ${2:T} {",
+      "\t$0",
+      "\treturn ${5:item}",
+      "}"
+    ],
     "description": "Generic function with multiple constraints (T: A & B)"
   },
   "Generic Function with Class Bound": {
-    "prefix": ["fngcb", "fngenericclassbound"],
-    "body": ["fn ${1:describe}<${2:T}: ${3:Animal}>(${4:a}: ${2:T}) -> ${5:string} {", "\t$0", "\treturn ${4:a}.${6:name}", "}"],
+    "prefix": [
+      "fngcb",
+      "fngenericclassbound"
+    ],
+    "body": [
+      "fn ${1:describe}<${2:T}: ${3:Animal}>(${4:a}: ${2:T}) -> ${5:string} {",
+      "\t$0",
+      "\treturn ${4:a}.${6:name}",
+      "}"
+    ],
     "description": "Generic function bounded by a class (T must be subclass of BaseClass)"
   },
   "Final Class": {
-    "prefix": ["finalclass"],
-    "body": ["final class ${1:Name} {", "\tconstructor(${2:params}) {", "\t\t$0", "\t}", "}"],
+    "prefix": [
+      "finalclass"
+    ],
+    "body": [
+      "final class ${1:Name} {",
+      "\tconstructor(${2:params}) {",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
     "description": "Final (non-inheritable) class"
   },
-  "Abstract Class": {
-    "prefix": ["abstractclass"],
-    "body": ["abstract class ${1:Name} {", "\tabstract ${2:method}(${3:params}) -> ${4:type}", "\t$0", "}"],
-    "description": "Abstract class"
-  },
   "Import From": {
-    "prefix": ["impfrom", "importfrom"],
-    "body": ["import { ${1:symbol} } from ${0:module}"],
+    "prefix": [
+      "impfrom",
+      "importfrom"
+    ],
+    "body": [
+      "import { ${1:symbol} } from ${0:module}"
+    ],
     "description": "Import specific symbols from module"
   },
   "Raw String": {
-    "prefix": ["rstr", "rawstring"],
-    "body": ["r\"${0}\""],
+    "prefix": [
+      "rstr",
+      "rawstring"
+    ],
+    "body": [
+      "r\"${0}\""
+    ],
     "description": "Raw string (no escape processing)"
   }
 }

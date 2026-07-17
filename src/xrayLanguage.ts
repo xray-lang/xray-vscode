@@ -13,17 +13,18 @@
 
 export const KEYWORDS = new Set([
     // Declarations
-    'let', 'const', 'fn', 'class', 'struct', 'interface', 'enum', 'type',
+    'var', 'const', 'fn', 'class', 'struct', 'packed', 'union', 'interface', 'enum', 'type',
+    'comptime',
     // Primitive type keywords
-    'int', 'int8', 'int16', 'int32', 'int64',
+    'int', 'int8', 'int16', 'int32', 'int64', 'byte',
     'uint8', 'uint16', 'uint32', 'uint64',
-    'float', 'float32', 'float64', 'string', 'bool', 'unknown',
+    'float', 'float32', 'float64', 'string', 'bool', 'rune',
     // Control flow
     'if', 'else', 'while', 'for', 'in', 'is', 'break', 'continue',
-    'return', 'yield', 'match',
+    'return', 'yield', 'match', 'default',
     // Class / OOP
     'extends', 'implements', 'constructor', 'this', 'super',
-    'new', 'static', 'private', 'public', 'abstract', 'override', 'final',
+    'new', 'static', 'private', 'protected', 'final',
     'operator',
     // Error handling
     'try', 'catch', 'throw', 'panic',
@@ -33,7 +34,7 @@ export const KEYWORDS = new Set([
     'go', 'await', 'select', 'defer', 'scope', 'linked', 'supervisor', 'after',
     'cancelled', 'shared',
     // Contextual
-    'ref', 'move', 'to',
+    'ref', 'move', 'to', 'unsafe',
     // Literals that look like keywords
     'true', 'false', 'null',
 ]);
@@ -43,11 +44,12 @@ export const KEYWORDS = new Set([
 // ---------------------------------------------------------------------------
 
 export const BUILTIN_FUNCTIONS = new Set([
-    'print', 'dump', 'typeof',
+    'print', 'dump', 'typeOf', 'typeName',
     'assert', 'assert_eq', 'assert_ne', 'assert_true', 'assert_false',
     'assert_throws',
-    'int', 'float', 'string', 'bool',
+    'int', 'float', 'string', 'bool', 'rune',
     'copy', 'chr',
+    'Coro',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -61,10 +63,16 @@ export const LITERALS = new Set(['true', 'false', 'null']);
 // ---------------------------------------------------------------------------
 
 export const BUILTIN_TYPES = new Set([
-    'Array', 'Map', 'Set', 'Json', 'Bytes', 'Channel', 'BigInt',
-    'Range', 'StringBuilder', 'Regex', 'DateTime',
-    'Logger', 'NetConn', 'NetListener', 'Task', 'WeakMap', 'WeakSet', 'Result',
-    'Atomic', 'Ordering', 'Recv', 'SendResult', 'TaskResult', 'TaskStatus',
+    'Array', 'Map', 'Set', 'Slice', 'Json', 'Channel', 'BigInt',
+    'Range', 'StringBuilder', 'Regex', 'RegexMatch',
+    'Path', 'Ptr', 'MutPtr',
+    'OsBarrier', 'OsCondvar', 'OsMutex', 'OsOnce', 'OsRwLock',
+    'NetConn', 'NetListener',
+    'Task', 'Thread', 'WorkQueue', 'CountdownLatch', 'EventCount',
+    'ResultGroup', 'Semaphore',
+    'Result', 'Atomic', 'Ordering', 'Endian', 'Type', 'Recv', 'SendResult',
+    'TaskResult', 'TaskStatus', 'PanicInfo',
+    'Utf8Error', 'StringSliceError', 'CompressionError', 'CryptoError',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -72,8 +80,8 @@ export const BUILTIN_TYPES = new Set([
 // ---------------------------------------------------------------------------
 
 export const PRIMITIVE_TYPES = new Set([
-    'int', 'int8', 'int16', 'int32', 'int64',
+    'int', 'int8', 'int16', 'int32', 'int64', 'byte',
     'uint8', 'uint16', 'uint32', 'uint64',
     'float', 'float32', 'float64',
-    'string', 'bool', 'unknown',
+    'string', 'bool', 'rune',
 ]);

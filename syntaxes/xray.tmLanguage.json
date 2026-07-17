@@ -142,11 +142,11 @@
     "keywords": {
       "patterns": [
         {
-          "comment": "shared const declaration: shared const NAME = ... (highlight modifier + declarator together)",
-          "match": "\\b(shared)\\s+(const)\\b",
+          "comment": "shared declaration: shared NAME = ... (highlight modifier + declarator together)",
+          "match": "\\b(shared)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
           "captures": {
             "1": { "name": "storage.modifier.shared.xray" },
-            "2": { "name": "keyword.declaration.const.xray" }
+            "2": { "name": "variable.other.declaration.xray" }
           }
         },
         {
@@ -154,8 +154,8 @@
           "match": "\\b(if|else|while|for|in|is|to|break|continue|return|match|default|yield)\\b"
         },
         {
-          "name": "keyword.declaration.let.xray",
-          "match": "\\blet\\b"
+          "name": "keyword.declaration.var.xray",
+          "match": "\\bvar\\b"
         },
         {
           "name": "keyword.declaration.const.xray",
@@ -167,11 +167,11 @@
         },
         {
           "name": "keyword.declaration.type.xray",
-          "match": "\\b(class|struct|interface|enum|type)\\b"
+          "match": "\\b(class|struct|packed|union|interface|enum|type)\\b"
         },
         {
           "name": "storage.modifier.xray",
-          "match": "\\b(static|private|public|abstract|override|shared|final)\\b"
+          "match": "\\b(static|private|protected|shared|final|comptime|unsafe)\\b"
         },
         {
           "name": "keyword.operator.overload.xray",
@@ -183,7 +183,7 @@
         },
         {
           "name": "keyword.exception.xray",
-          "match": "\\b(try[?!]?|catch|throw|panic)\\b"
+          "match": "\\b(try|catch|throw|panic)\\b"
         },
         {
           "name": "keyword.module.xray",
@@ -292,7 +292,7 @@
         },
         {
           "comment": "Nullable type: int?, string?",
-          "match": "\\b(int|float|string|bool|unknown|[A-Z][a-zA-Z0-9_]*)(\\?)",
+          "match": "\\b(int|float|string|bool|byte|rune|[A-Z][a-zA-Z0-9_]*)(\\?)",
           "captures": {
             "1": { "name": "support.type.xray" },
             "2": { "name": "keyword.operator.nullable.xray" }
@@ -309,11 +309,11 @@
         },
         {
           "name": "support.type.primitive.xray",
-          "match": "\\b(int|int8|int16|int32|int64|uint8|uint16|uint32|uint64|float|float32|float64|string|bool|unknown)\\b"
+          "match": "\\b(int|int8|int16|int32|int64|byte|uint8|uint16|uint32|uint64|float|float32|float64|string|bool|rune)\\b"
         },
         {
           "name": "support.type.builtin.xray",
-          "match": "\\b(Array|Map|Set|Json|Bytes|Channel|BigInt|Range|StringBuilder|Exception|Regex|DateTime|Logger|NetConn|NetListener|Task|Recv|SendResult|TaskResult|TaskStatus|WeakMap|WeakSet|Result|Atomic|Ordering)\\b"
+          "match": "\\b(Array|Map|Set|Slice|Json|Channel|BigInt|Range|StringBuilder|Regex|RegexMatch|Path|Ptr|MutPtr|OsBarrier|OsCondvar|OsMutex|OsOnce|OsRwLock|NetConn|NetListener|Task|Thread|WorkQueue|CountdownLatch|EventCount|ResultGroup|Semaphore|Recv|SendResult|TaskResult|TaskStatus|Result|Atomic|Ordering|Endian|Type|PanicInfo|Utf8Error|StringSliceError|CompressionError|CryptoError)\\b"
         }
       ]
     },
@@ -388,7 +388,7 @@
         {
           "comment": "Built-in global functions",
           "name": "support.function.builtin.xray",
-          "match": "\\b(print|dump|typeof|assert|assert_eq|assert_ne|assert_true|assert_false|assert_throws|int|float|string|bool|copy|chr)\\s*(?=\\()"
+          "match": "\\b(print|dump|typeOf|typeName|assert|assert_eq|assert_ne|assert_true|assert_false|assert_throws|int|float|string|bool|rune|copy|chr|Coro)\\s*(?=\\()"
         },
         {
           "comment": "Coroutine / concurrency intrinsics used as call sites",
