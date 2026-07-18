@@ -2,6 +2,18 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.3.1 – 2026-07-18
+
+Bundled Xray runtime: **0.9.0**
+
+### Fixed
+- Recognize current `var` / `const` / `shared` / `owned` declarations and
+  C-style or for-in loop variables in debugger inline-value discovery.
+- Highlight the `owned` declaration modifier and the `out` parameter mode.
+- Align fallback keyword, builtin-function, and builtin-type suggestions with
+  the current language surface, including `len`, branch hints, weak
+  collections, `Coro`, and `CoroPool`.
+
 ## 1.0.4 – 2026-05
 
 ### Fixed

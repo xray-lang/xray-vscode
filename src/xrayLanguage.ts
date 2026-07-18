@@ -13,7 +13,7 @@
 
 export const KEYWORDS = new Set([
     // Declarations
-    'var', 'const', 'fn', 'class', 'struct', 'packed', 'union', 'interface', 'enum', 'type',
+    'var', 'const', 'owned', 'fn', 'class', 'struct', 'packed', 'union', 'interface', 'enum', 'type',
     'comptime',
     // Primitive type keywords
     'int', 'int8', 'int16', 'int32', 'int64', 'byte',
@@ -34,7 +34,7 @@ export const KEYWORDS = new Set([
     'go', 'await', 'select', 'defer', 'scope', 'linked', 'supervisor', 'after',
     'cancelled', 'shared',
     // Contextual
-    'ref', 'move', 'to', 'unsafe',
+    'ref', 'out', 'move', 'to', 'unsafe',
     // Literals that look like keywords
     'true', 'false', 'null',
 ]);
@@ -48,8 +48,7 @@ export const BUILTIN_FUNCTIONS = new Set([
     'assert', 'assert_eq', 'assert_ne', 'assert_true', 'assert_false',
     'assert_throws',
     'int', 'float', 'string', 'bool', 'rune',
-    'copy', 'chr',
-    'Coro',
+    'copy', 'chr', 'len', 'likely', 'unlikely',
 ]);
 
 // ---------------------------------------------------------------------------
@@ -63,7 +62,8 @@ export const LITERALS = new Set(['true', 'false', 'null']);
 // ---------------------------------------------------------------------------
 
 export const BUILTIN_TYPES = new Set([
-    'Array', 'Map', 'Set', 'Slice', 'Json', 'Channel', 'BigInt',
+    'Array', 'Map', 'Set', 'WeakMap', 'WeakSet', 'Slice', 'Json', 'Channel', 'Coro', 'CoroPool',
+    'BigInt',
     'Range', 'StringBuilder', 'Regex', 'RegexMatch',
     'Path', 'Ptr', 'MutPtr',
     'OsBarrier', 'OsCondvar', 'OsMutex', 'OsOnce', 'OsRwLock',

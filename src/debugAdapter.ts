@@ -162,9 +162,11 @@ class XrayDebugConfigurationProvider implements vscode.DebugConfigurationProvide
 
 /**
  * Matches identifiers that are candidates for inline display:
- *   let x = ...
+ *   var x = ...
  *   const y = ...
- *   for (let z of iter)
+ *   owned z = ...
+ *   for (var i = 0; ...)
+ *   for (item in iter)
  *   fn(a, b): T { ... }     // parameters
  *   a = expr                // assignment target
  *
@@ -173,9 +175,9 @@ class XrayDebugConfigurationProvider implements vscode.DebugConfigurationProvide
  * paused, and unresolved names just don't render a value).
  */
 class XrayInlineValuesProvider implements vscode.InlineValuesProvider {
-    private static readonly DECL_RE = /\b(?:shared\s+)?(?:let|const)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+    private static readonly DECL_RE = /\b(?:var|const|shared|owned)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
     private static readonly FOR_RE =
-        /\bfor\s*\(\s*(?:let|const)?\s*([A-Za-z_][A-Za-z0-9_]*)\b/g;
+        /\bfor\s*\(\s*(?:var\s+)?([A-Za-z_][A-Za-z0-9_]*)\b/g;
     private static readonly PARAM_RE =
         /\bfn\s+[A-Za-z_][A-Za-z0-9_]*\s*\(([^)]*)\)/g;
     private static readonly ASSIGN_RE =
@@ -193,7 +195,7 @@ class XrayInlineValuesProvider implements vscode.InlineValuesProvider {
         for (let line = viewport.start.line; line <= endLine; line++) {
             const text = document.lineAt(line).text;
 
-            // let/const declarations.
+            // var/const/shared/owned declarations.
             for (const m of text.matchAll(XrayInlineValuesProvider.DECL_RE)) {
                 const name = m[1];
                 const col = text.indexOf(name, m.index ?? 0);
@@ -201,7 +203,7 @@ class XrayInlineValuesProvider implements vscode.InlineValuesProvider {
                 this.push(values, seen, line, col, name);
             }
 
-            // for (let x of / in iter)
+            // for (var i = ...), or for (item in iter)
             for (const m of text.matchAll(XrayInlineValuesProvider.FOR_RE)) {
                 const name = m[1];
                 const col = text.indexOf(name, m.index ?? 0);
