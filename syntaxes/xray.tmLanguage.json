@@ -387,7 +387,7 @@
         },
         {
           "name": "keyword.operator.range.xray",
-          "match": "\\.\\.\\.?"
+          "match": "\\.\\.(?:=|\\.)?"
         }
       ]
     },
