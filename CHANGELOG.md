@@ -2,6 +2,15 @@
 
 All notable changes to the Xray VS Code extension are documented in this file.
 
+## 1.4.0 – 2026-07-19
+
+Bundled Xray runtime: **0.9.1**
+
+### Changed
+- Bundle the Xray 0.9.1 runtime in all five platform-specific packages.
+- Recognize `..`, `..=`, and `...` as complete range operators in the TextMate grammar.
+- Highlight the current standard-library module set, including `simd`.
+
 ## 1.3.1 – 2026-07-18
 
 Bundled Xray runtime: **0.9.0**

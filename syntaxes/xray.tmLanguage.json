@@ -329,7 +329,7 @@
       "patterns": [
         {
           "comment": "Standard library module prefix, e.g. io.readFile / http.listen",
-          "match": "\\b(base64|cluster|compress|crypto|csv|datetime|encoding|gc|http|io|log|math|net|os|path|regex|time|toml|url|ws|xml|yaml)\\s*(?=\\.)",
+          "match": "\\b(base64|cluster|compress|crypto|csv|datetime|encoding|http|io|log|math|mem|net|os|parallel|path|regex|runtime|simd|strconv|sync|sys|text|time|toml|url|ws|xml|yaml)\\s*(?=\\.)",
           "name": "support.module.xray"
         },
         {
