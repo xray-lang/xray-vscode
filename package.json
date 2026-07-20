@@ -468,6 +468,7 @@
     "bundle-watch": "node esbuild.config.mjs --watch",
     "package-ext": "npm run check-types && npm run clean && npm run bundle",
     "check-types": "tsc -p ./ --noEmit",
+    "test:quoted-literals": "npm run compile && node scripts/test-quoted-literals.mjs",
     "package": "vsce package --no-dependencies",
     "publish": "vsce publish --no-dependencies",
     "clean": "rimraf out"

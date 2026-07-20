@@ -8,6 +8,7 @@ import {
     KEYWORDS, LITERALS,
     BUILTIN_FUNCTIONS, BUILTIN_TYPES, PRIMITIVE_TYPES
 } from './xrayLanguage';
+import { scanQuotedLiteral } from './quotedLiteralScanner';
 
 interface Token {
     type: 'comment' | 'string' | 'number' | 'keyword' | 'literal' | 'builtin' | 'text';
@@ -28,6 +29,15 @@ function tokenize(code: string): Token[] {
     while (i < len) {
         const c = code[i];
 
+        // Xray's six quoted-literal prefix families share one delimiter
+        // contract. Scan them before identifiers so br/cr are atomic prefixes.
+        const quoted = scanQuotedLiteral(code, i);
+        if (quoted) {
+            tokens.push({ type: 'string', value: code.slice(i, quoted.end) });
+            i = quoted.end;
+            continue;
+        }
+
         // Line comment
         if (c === '/' && code[i + 1] === '/') {
             let end = code.indexOf('\n', i);
@@ -46,25 +56,14 @@ function tokenize(code: string): Token[] {
             continue;
         }
 
-        // Strings
-        if (c === '"' || c === "'") {
-            const quote = c;
+        // Rune literal (single quotes are not strings in Xray).
+        if (c === "'") {
             let j = i + 1;
-            while (j < len && code[j] !== quote) {
+            while (j < len && code[j] !== "'") {
                 if (code[j] === '\\' && j + 1 < len) j++;
                 j++;
             }
-            tokens.push({ type: 'string', value: code.slice(i, Math.min(j + 1, len)) });
-            i = Math.min(j + 1, len);
-            continue;
-        }
-
-        // Raw strings: r"...", r'...'
-        if (c === 'r' && i + 1 < len && (code[i + 1] === '"' || code[i + 1] === "'")) {
-            const quote = code[i + 1];
-            let j = i + 2;
-            while (j < len && code[j] !== quote) j++;
-            tokens.push({ type: 'string', value: code.slice(i, Math.min(j + 1, len)) });
+            tokens.push({ type: 'literal', value: code.slice(i, Math.min(j + 1, len)) });
             i = Math.min(j + 1, len);
             continue;
         }

@@ -1,151 +1,88 @@
 import * as vscode from 'vscode';
+import { scanQuotedLiteral } from './quotedLiteralScanner';
 
 /**
- * Folding provider for Xray (.xr) files.
- *
- * Single-pass scanner that produces folding ranges for:
- *   1. Brace blocks  { … }   — fn, class, struct, if, while, for, match, etc.
- *   2. Multi-line string literals  '…' / "…"
- *   3. Block comments  /* … *​/
- *   4. Consecutive import lines
- *
- * Registering a FoldingRangeProvider causes VS Code to stop using its built-in
- * indentation-based folding, so we must emit brace ranges ourselves.
+ * Folding provider for Xray source. Quoted literals are scanned with the same
+ * six-prefix, variable-quote contract as the Markdown preview helper.
  */
 export class XrayFoldingRangeProvider implements vscode.FoldingRangeProvider {
     provideFoldingRanges(document: vscode.TextDocument): vscode.FoldingRange[] {
         const ranges: vscode.FoldingRange[] = [];
-        const lineCount = document.lineCount;
-
-        // State
-        let inString: string | null = null;   // quote char while inside multi-line string
-        let stringStart = -1;
-        let inBlock = false;                  // inside /* … */
-        let blockStart = -1;
+        const source = document.getText();
+        const braceStack: number[] = [];
         let importStart = -1;
         let importEnd = -1;
-        const braceStack: number[] = [];      // line numbers of unmatched '{'
 
-        for (let i = 0; i < lineCount; i++) {
-            const text = document.lineAt(i).text;
-
-            // ── Inside multi-line string ──
-            if (inString) {
-                if (closesString(text, inString)) {
-                    if (i > stringStart) {
-                        ranges.push(new vscode.FoldingRange(stringStart, i));
-                    }
-                    inString = null;
-                }
-                continue;
-            }
-
-            // ── Inside block comment ──
-            if (inBlock) {
-                if (text.includes('*/')) {
-                    ranges.push(
-                        new vscode.FoldingRange(blockStart, i, vscode.FoldingRangeKind.Comment)
-                    );
-                    inBlock = false;
-                }
-                continue;
-            }
-
-            // ── Import block tracking ──
+        for (let line = 0; line < document.lineCount; line++) {
+            const text = document.lineAt(line).text;
             if (/^\s*import\b/.test(text)) {
-                if (importStart === -1) { importStart = i; }
-                importEnd = i;
+                if (importStart === -1) importStart = line;
+                importEnd = line;
             } else if (importStart !== -1 && !/^\s*$/.test(text)) {
                 if (importEnd > importStart) {
-                    ranges.push(
-                        new vscode.FoldingRange(importStart, importEnd, vscode.FoldingRangeKind.Imports)
-                    );
+                    ranges.push(new vscode.FoldingRange(importStart, importEnd,
+                                                        vscode.FoldingRangeKind.Imports));
                 }
                 importStart = -1;
             }
+        }
 
-            // ── Scan characters for braces, strings, comments ──
-            let j = 0;
-            while (j < text.length) {
-                const ch = text[j];
-
-                // Line comment — rest of line is inert
-                if (ch === '/' && j + 1 < text.length && text[j + 1] === '/') {
-                    break;
-                }
-
-                // Block comment start
-                if (ch === '/' && j + 1 < text.length && text[j + 1] === '*') {
-                    const endPos = text.indexOf('*/', j + 2);
-                    if (endPos === -1) {
-                        // Multi-line block comment
-                        inBlock = true;
-                        blockStart = i;
-                        break;
-                    }
-                    // Single-line block comment — skip past it
-                    j = endPos + 2;
-                    continue;
-                }
-
-                // String literal
-                if (ch === '\'' || ch === '"') {
-                    const q = ch;
-                    j++;
-                    let closed = false;
-                    while (j < text.length) {
-                        if (text[j] === '\\') { j += 2; continue; }
-                        if (text[j] === q) { closed = true; j++; break; }
-                        j++;
-                    }
-                    if (!closed) {
-                        // Opens a multi-line string
-                        inString = q;
-                        stringStart = i;
-                        break;
-                    }
-                    continue;
-                }
-
-                // Braces
-                if (ch === '{') {
-                    braceStack.push(i);
-                } else if (ch === '}') {
-                    if (braceStack.length > 0) {
-                        const openLine = braceStack.pop()!;
-                        if (i > openLine) {
-                            ranges.push(new vscode.FoldingRange(openLine, i));
-                        }
+        let offset = 0;
+        while (offset < source.length) {
+            const quoted = scanQuotedLiteral(source, offset);
+            if (quoted) {
+                if (quoted.block) {
+                    const startLine = document.positionAt(quoted.start).line;
+                    const endLine = document.positionAt(quoted.end).line;
+                    if (endLine > startLine) {
+                        ranges.push(new vscode.FoldingRange(startLine, endLine));
                     }
                 }
-
-                j++;
+                offset = Math.max(quoted.end, offset + 1);
+                continue;
             }
+
+            if (source.startsWith('//', offset)) {
+                const newline = source.indexOf('\n', offset + 2);
+                offset = newline < 0 ? source.length : newline + 1;
+                continue;
+            }
+            if (source.startsWith('/*', offset)) {
+                const close = source.indexOf('*/', offset + 2);
+                const end = close < 0 ? source.length : close + 2;
+                const startLine = document.positionAt(offset).line;
+                const endLine = document.positionAt(end).line;
+                if (endLine > startLine) {
+                    ranges.push(new vscode.FoldingRange(startLine, endLine,
+                                                        vscode.FoldingRangeKind.Comment));
+                }
+                offset = end;
+                continue;
+            }
+            if (source[offset] === "'") {
+                offset++;
+                while (offset < source.length && source[offset] !== '\n') {
+                    if (source[offset] === '\\' && offset + 1 < source.length) offset++;
+                    if (source[offset++] === "'") break;
+                }
+                continue;
+            }
+            if (source[offset] === '{') {
+                braceStack.push(document.positionAt(offset).line);
+            } else if (source[offset] === '}' && braceStack.length > 0) {
+                const openLine = braceStack.pop()!;
+                const closeLine = document.positionAt(offset).line;
+                if (closeLine > openLine) {
+                    ranges.push(new vscode.FoldingRange(openLine, closeLine));
+                }
+            }
+            offset++;
         }
 
-        // Flush trailing import block
         if (importStart !== -1 && importEnd > importStart) {
-            ranges.push(
-                new vscode.FoldingRange(importStart, importEnd, vscode.FoldingRangeKind.Imports)
-            );
+            ranges.push(new vscode.FoldingRange(importStart, importEnd,
+                                                vscode.FoldingRangeKind.Imports));
         }
-
         return ranges;
     }
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Returns true if the line contains an unescaped instance of `q` that would
- * close the currently open multi-line string.
- */
-function closesString(line: string, q: string): boolean {
-    for (let i = 0; i < line.length; i++) {
-        if (line[i] === '\\') { i++; continue; }
-        if (line[i] === q) { return true; }
-    }
-    return false;
 }

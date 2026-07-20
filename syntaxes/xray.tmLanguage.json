@@ -45,58 +45,76 @@
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.xray",
-          "begin": "\"",
-          "end": "\"",
+          "name": "string.quoted.raw.block.bytes.xray",
+          "begin": "\\b(?:br|cr)(\"{3,})(?=\\r?$)",
+          "end": "^[\\t ]*\\1(?=\\r?$)"
+        },
+        {
+          "name": "string.quoted.raw.block.xray",
+          "begin": "\\br(\"{3,})(?=\\r?$)",
+          "end": "^[\\t ]*\\1(?=\\r?$)",
           "patterns": [
-            {
-              "name": "constant.character.escape.xray",
-              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
-            },
-            {
-              "name": "invalid.illegal.escape.xray",
-              "match": "\\\\."
-            },
-            {
-              "name": "meta.embedded.expression.xray",
-              "begin": "\\$\\{",
-              "end": "\\}",
-              "beginCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.begin.xray" }
-              },
-              "endCaptures": {
-                "0": { "name": "punctuation.definition.template-expression.end.xray" }
-              },
-              "patterns": [
-                { "include": "$self" }
-              ]
-            }
+            { "include": "#string-interpolation" }
           ]
         },
         {
-          "name": "string.quoted.single.xray",
+          "name": "string.quoted.block.bytes.xray",
+          "begin": "\\b(?:b|c)(\"{3,})(?=\\r?$)",
+          "end": "^[\\t ]*\\1(?=\\r?$)",
+          "patterns": [
+            { "include": "#string-escapes" }
+          ]
+        },
+        {
+          "name": "string.quoted.block.xray",
+          "begin": "(?<![A-Za-z0-9_])(\"{3,})(?=\\r?$)",
+          "end": "^[\\t ]*\\1(?=\\r?$)",
+          "patterns": [
+            { "include": "#string-escapes" },
+            { "include": "#string-interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.empty.xray",
+          "match": "(?<![A-Za-z0-9_])(?:br|cr|r|b|c)?\"\"(?!\")"
+        },
+        {
+          "name": "string.quoted.raw.bytes.xray",
+          "begin": "\\b(?:br|cr)\"(?!\")",
+          "end": "\"|$"
+        },
+        {
+          "name": "string.quoted.raw.xray",
+          "begin": "\\br\"(?!\")",
+          "end": "\"|$",
+          "patterns": [
+            { "include": "#string-interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.bytes.xray",
+          "begin": "\\b(?:b|c)\"(?!\")",
+          "end": "\"|$",
+          "patterns": [
+            { "include": "#string-escapes" }
+          ]
+        },
+        {
+          "name": "string.quoted.double.xray",
+          "begin": "(?<![A-Za-z0-9_])\"(?!\")",
+          "end": "\"|$",
+          "patterns": [
+            { "include": "#string-escapes" },
+            { "include": "#string-interpolation" }
+          ]
+        },
+        {
+          "name": "constant.character.rune.xray",
           "begin": "'",
           "end": "'",
           "patterns": [
-            {
-              "name": "constant.character.escape.xray",
-              "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
-            },
-            {
-              "name": "invalid.illegal.escape.xray",
-              "match": "\\\\."
-            }
+            { "include": "#string-escapes" }
           ]
-        },
-        {
-          "name": "string.raw.double.xray",
-          "begin": "r\"",
-          "end": "\""
-        },
-        {
-          "name": "string.raw.single.xray",
-          "begin": "r'",
-          "end": "'"
         },
         {
           "name": "string.regexp.xray",
@@ -107,6 +125,36 @@
               "name": "constant.character.escape.xray",
               "match": "\\\\."
             }
+          ]
+        }
+      ]
+    },
+    "string-escapes": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.xray",
+          "match": "\\\\(x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4}|[0-7]{1,3}|[nrt\\\\'\"`0abfv])"
+        },
+        {
+          "name": "invalid.illegal.escape.xray",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "string-interpolation": {
+      "patterns": [
+        {
+          "name": "meta.embedded.expression.xray",
+          "begin": "\\$\\{",
+          "end": "\\}",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.template-expression.begin.xray" }
+          },
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.template-expression.end.xray" }
+          },
+          "patterns": [
+            { "include": "$self" }
           ]
         }
       ]
